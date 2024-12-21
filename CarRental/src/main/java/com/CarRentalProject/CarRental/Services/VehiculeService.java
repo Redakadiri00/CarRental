@@ -13,27 +13,33 @@ public class VehiculeService implements VehiculeServiceInterface {
     private final VehiculeRepository vehiculeRepository;
 
     public VehiculeService(VehiculeRepository vehiculeRepository) {
+
         this.vehiculeRepository = vehiculeRepository;
     }
 
     @Override
     public Vehicule addVehicule(Vehicule vehicule) {
+        boolean exists = vehiculeRepository.existsByMarqueAndModelAndType(
+                vehicule.getMarque(), vehicule.getModel(), vehicule.getType());
+        if (exists) {
+            throw new IllegalStateException("Vehicule already exists");
+        }
         return vehiculeRepository.save(vehicule);
     }
 
     @Override
     public Vehicule updateVehicule(Vehicule vehicule) {
-        return null;
+        return vehiculeRepository.save(vehicule);
     }
 
-    @Override
-    public void deleteVehicule(Vehicule vehicule) {
 
+    public void deleteVehicule(Integer id) {
+        vehiculeRepository.deleteById(id);
     }
 
     @Override
     public List<Vehicule> getAllVehicules() {
-        return List.of();
+        return vehiculeRepository.findAll();
     }
 
     @Override
@@ -67,7 +73,7 @@ public class VehiculeService implements VehiculeServiceInterface {
     }
 
     @Override
-    public List<Vehicule> getVehiculeByStatus(String status) {
+    public List<Vehicule> getVehiculeBystatus_voiture(String status) {
         return List.of();
     }
 

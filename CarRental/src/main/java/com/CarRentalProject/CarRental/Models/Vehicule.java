@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,44 +9,49 @@ public class Vehicule {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Integer id_voiture;
+    private Integer Id;
     private String marque;
     private String model;
     private String type;
-    private int tarifDeLocation;
-    private String status;
-    private String imageVoiture;
-    private Enum Caracteristique_voiture;
+    private int tarif_de_location;
 
-    public Vehicule(Integer id_voiture, String marque, String model, String type, int tarifDeLocation, String status, String imageVoiture, Enum Caracteristique_voiture) {
-        this.id_voiture = id_voiture;
+    @JsonProperty("status")
+    private String status_voiture;
+    private String imageVoiture;
+
+    @Enumerated(EnumType.STRING)
+    @JsonProperty("caracteristique")
+    private Caracteristique_voiture caracteristique;
+
+    public Vehicule(Integer Id, String marque, String model, String type, int tarif_de_location, String status_voiture, String imageVoiture, Caracteristique_voiture caracteristique) {
+        this.Id = Id;
         this.marque = marque;
         this.model = model;
         this.type = type;
-        this.tarifDeLocation = tarifDeLocation;
-        this.status = status;
+        this.tarif_de_location = tarif_de_location;
+        this.status_voiture = status_voiture;
         this.imageVoiture = imageVoiture;
-        this.Caracteristique_voiture = Caracteristique_voiture;
+        this.caracteristique = caracteristique;
     }
 
     public Vehicule(){
 
     }
 
-    public Enum getCaracteristique_voiture() {
-        return Caracteristique_voiture;
+    public Caracteristique_voiture getcaracteristique() {
+        return caracteristique;
     }
 
     public String getImageVoiture() {
         return imageVoiture;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStatus_voiture() {
+        return status_voiture;
     }
 
-    public int getTarif_de_Location() {
-        return tarifDeLocation;
+    public int gettarif_de_location() {
+        return tarif_de_location;
     }
 
     public String getType() {
@@ -61,11 +67,11 @@ public class Vehicule {
     }
 
     public int getId_voiture() {
-        return id_voiture;
+        return Id;
     }
 
     public void setId_voiture(int id) {
-        this.id_voiture = id_voiture;
+        this.Id = Id;
     }
 
     public void setMarque(String marque) {
@@ -80,19 +86,19 @@ public class Vehicule {
         this.type = type;
     }
 
-    public void setTarif_de_Location(int tarifDeLocation) {
-        this.tarifDeLocation = tarifDeLocation;
+    public void settarif_de_location(int tarif_de_location) {
+        this.tarif_de_location = tarif_de_location;
     }
 
-    public void setStatus(String status) {
-        status = status;
+    public void setStatus_voiture(String status_voiture) {
+        this.status_voiture = status_voiture;
     }
 
     public void setImageVoiture(String imageVoiture) {
         this.imageVoiture = imageVoiture;
     }
 
-    public void setCaracteristique_voiture(Enum caracteristique_voiture) {
-        Caracteristique_voiture = caracteristique_voiture;
+    public void setCaracteristique_voiture(Caracteristique_voiture caracteristique) {
+        caracteristique = caracteristique;
     }
 }

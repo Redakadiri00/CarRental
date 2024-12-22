@@ -1,98 +1,108 @@
 package com.CarRentalProject.CarRental.Models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "vehicule")
 public class Vehicule {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Integer id_voiture;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer Id;
     private String marque;
     private String model;
     private String type;
-    private int tarifDeLocation;
-    private String status;
-    private String imageVoiture;
-    private Enum Caracteristique_voiture;
+    private int tarif;
 
-    public Vehicule(Integer id_voiture, String marque, String model, String type, int tarifDeLocation, String status, String imageVoiture, Enum Caracteristique_voiture) {
-        this.id_voiture = id_voiture;
+    @JsonProperty("status")
+    private String status_voiture;
+    private String imageVoiture;
+
+    @ElementCollection(targetClass = Caracteristique_voiture.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "vehicule_caracteristiques")
+    @Column(name = "caracteristique")
+    @JsonProperty("caracteristique")
+    private Set<Caracteristique_voiture> caracteristique;
+
+    public Vehicule(Integer Id, String marque, String model, String type, int tarif, String status_voiture, String imageVoiture, Set<Caracteristique_voiture> caracteristique) {
+        this.Id = Id;
         this.marque = marque;
         this.model = model;
         this.type = type;
-        this.tarifDeLocation = tarifDeLocation;
-        this.status = status;
+        this.tarif = tarif;
+        this.status_voiture = status_voiture;
         this.imageVoiture = imageVoiture;
-        this.Caracteristique_voiture = Caracteristique_voiture;
+        this.caracteristique = caracteristique;
     }
 
-    public Vehicule(){
-
+    public Vehicule() {
     }
 
-    public Enum getCaracteristique_voiture() {
-        return Caracteristique_voiture;
+    public Set<Caracteristique_voiture> getCaracteristique() {
+        return caracteristique;
+    }
+
+    public void setCaracteristique(Set<Caracteristique_voiture> caracteristique) {
+        this.caracteristique = caracteristique;
     }
 
     public String getImageVoiture() {
         return imageVoiture;
     }
 
-    public String getStatus() {
-        return status;
+    public void setImageVoiture(String imageVoiture) {
+        this.imageVoiture = imageVoiture;
     }
 
-    public int getTarif_de_Location() {
-        return tarifDeLocation;
+    public String getStatus_voiture() {
+        return status_voiture;
+    }
+
+    public void setStatus_voiture(String status_voiture) {
+        this.status_voiture = status_voiture;
+    }
+
+    public int getTarif_de_location() {
+        return tarif;
+    }
+
+    public void setTarif_de_location(int TarifDeLocation) {
+        this.tarif = TarifDeLocation;
     }
 
     public String getType() {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getModel() {
         return model;
-    }
-
-    public String getMarque() {
-        return marque;
-    }
-
-    public int getId_voiture() {
-        return id_voiture;
-    }
-
-    public void setId_voiture(int id) {
-        this.id_voiture = id_voiture;
-    }
-
-    public void setMarque(String marque) {
-        this.marque = marque;
     }
 
     public void setModel(String model) {
         this.model = model;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public String getMarque() {
+        return marque;
     }
 
-    public void setTarif_de_Location(int tarifDeLocation) {
-        this.tarifDeLocation = tarifDeLocation;
+    public void setMarque(String marque) {
+        this.marque = marque;
     }
 
-    public void setStatus(String status) {
-        status = status;
+    public Integer getId_voiture() {
+        return Id;
     }
 
-    public void setImageVoiture(String imageVoiture) {
-        this.imageVoiture = imageVoiture;
-    }
-
-    public void setCaracteristique_voiture(Enum caracteristique_voiture) {
-        Caracteristique_voiture = caracteristique_voiture;
+    public void setId_voiture(Integer Id) {
+        this.Id = Id;
     }
 }

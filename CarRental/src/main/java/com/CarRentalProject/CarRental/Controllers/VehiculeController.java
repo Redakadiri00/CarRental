@@ -38,4 +38,15 @@ public class VehiculeController {
         return vehiculeService.updateVehicule(vehicule);
     }
 
+    @GetMapping("/{marque}")
+    public List<String> getModelByMarque(@PathVariable("marque") String marque) {
+        return vehiculeService.getModelByMarque(marque);
+    }
+
+    @GetMapping("/tarif/{tarifmin}-{tarifmax}")
+    public List<Vehicule> getVehiculeByTarifBetween(@PathVariable("tarifmin") int tarifmin, @PathVariable("tarifmax") int tarifmax) {
+        return vehiculeService.getVehiculeByTarifBetween(tarifmin, tarifmax);
+    }
+
+
 }

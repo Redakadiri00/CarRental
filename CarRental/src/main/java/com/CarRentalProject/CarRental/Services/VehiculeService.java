@@ -43,6 +43,17 @@ public class VehiculeService implements VehiculeServiceInterface {
     }
 
     @Override
+    public List<String> getModelByMarque(String marque){
+        return vehiculeRepository.getModelByMarque(marque);
+    }
+
+    @Override
+    public List<Vehicule> getVehiculeByTarifBetween(int tarifmin, int tarifmax) {
+        return vehiculeRepository.findByTarifBetween(tarifmin, tarifmax);
+    }
+
+
+    @Override
     public Vehicule getVehiculeById(int id) {
         return null;
     }
@@ -77,10 +88,6 @@ public class VehiculeService implements VehiculeServiceInterface {
         return List.of();
     }
 
-    @Override
-    public List<Vehicule> getVehiculeByTarif(int tarifmin, int Tarifmax) {
-        return List.of();
-    }
 
     @Override
     public List<Vehicule> getVehiculeByMarqueAndModel(String marque, String model) {

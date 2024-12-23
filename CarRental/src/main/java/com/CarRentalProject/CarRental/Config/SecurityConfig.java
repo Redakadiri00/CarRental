@@ -17,7 +17,7 @@ public class SecurityConfig {
                 .authorizeRequests(requests -> {
                     try {
                         requests
-                        .requestMatchers("/api/user/add").permitAll() // Allow access to /api/user/add
+                        .requestMatchers("/api/contrats").permitAll() // Allow access to /api/user/add
                         .anyRequest().authenticated()
                         .and()
                         .formLogin(login -> login.permitAll())

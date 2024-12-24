@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.Models.Vehicule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,12 @@ public class UserService implements UserServiceInterface {
 
     @Autowired
     private SecurityService securityService;
+
+
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+    }
 
     @Override
     public User findByUsername(String username) {

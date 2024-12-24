@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface VehiculeRepository extends JpaRepository<Vehicule, Integer> {
@@ -26,5 +27,10 @@ public interface VehiculeRepository extends JpaRepository<Vehicule, Integer> {
     @Query("SELECT v.model FROM Vehicule v WHERE v.marque = :marque")
     List<String> getModelByMarque(@Param("marque") String marque);
     boolean existsByMarqueAndModelAndType(String marque, String model, String type);
+
+    @Query("SELECT v FROM Vehicule v WHERE v.Id NOT IN " +
+            "(SELECT r.vehicule.Id FROM Reservation r WHERE " +
+            "(r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut))")
+    List<Vehicule> findAvailableVehicules(@Param("dateDebut") LocalDate dateDebut, @Param("dateFin") LocalDate dateFin);
 
 }

@@ -1,8 +1,12 @@
 package com.CarRentalProject.CarRental.Controllers;
 
 import com.CarRentalProject.CarRental.Models.Contrat;
+import com.CarRentalProject.CarRental.Services.ContratService;
 import com.CarRentalProject.CarRental.Services.ContratServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +41,15 @@ public class ContratController {
     @PutMapping("/{id}")
     public Contrat updateContrat(@PathVariable Long id, @RequestBody Contrat contrat) {
         return contratService.updateContrat(id, contrat);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> telechargerContratPdf(@PathVariable Long id) {
+        byte[] pdf = ContratService.genererContratPdf(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contrat-" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }
 

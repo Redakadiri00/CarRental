@@ -1,5 +1,7 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.Enums.StatutContrat;
+import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import com.CarRentalProject.CarRental.Models.Contrat;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Repositories.ContratRepository;
@@ -8,6 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import java.io.ByteArrayOutputStream;
 
 @Service
 public class ContratService implements ContratServiceInterface {
@@ -40,10 +47,11 @@ public class ContratService implements ContratServiceInterface {
         Contrat existingContrat = contratRepository.findById(id).orElse(null);
         existingContrat.setDateCreation(contrat.getDateCreation());
         existingContrat.setFacture(contrat.getFacture());
+        existingContrat.setStatut(contrat.getStatut());
         return contratRepository.save(existingContrat);
     }
 
-    //Regles metier
+ /*   //Regles metier
     public void checkContratDate(Contrat contrat){
         //Contrat doit avoir une date de creation
         if(contrat.getDateCreation() == null){
@@ -78,9 +86,62 @@ public class ContratService implements ContratServiceInterface {
         contrat.setDateCreation(new Date());
         contrat.setFacture(facture); // Lier à la facture
         return saveContratWithRules(contrat);
+    }*/
+
+    public Contrat genererContrat(Facture facture) {
+        // Génère un contrat à partir d'une facture
+        Contrat contrat = new Contrat();
+        contrat.setDateCreation(new Date());
+        contrat.setFacture(facture);
+        contrat.setStatut(StatutContrat.EN_COURS);
+        return contratRepository.save(contrat);
     }
 
+    @Override
+    public Contrat validerContrat(Long id) {
+        Contrat contrat = contratRepository.findById(id).orElse(null);
+        // Validation du contrat
+        return contratRepository.save(contrat);
+    }
 
+    @Override
+    public boolean verifierFacturesPayees(Contrat contrat) {
+        if (contrat.getFacture() == null) {
+            throw new RuntimeException("Aucune facture associée au contrat.");
+        }
+
+        // Vérifie si la facture associée est payée
+        return contrat.getFacture().getStatut() == StatutFacture.PAYEE;
+    }
+    @Override
+    public List<Contrat> getContratsByClientId(Long clientId) {
+        return contratRepository.findByFactureReservationClientId(clientId);
+    }
+
+    @Override
+    public List<Contrat> getContratsByPeriode(Date debut, Date fin) {
+        return contratRepository.findByDateCreationBetween(debut, fin);    }
+
+    @Override
+    public static byte[] genererContratPdf(Long id) {
+        Contrat contrat = contratRepository.findById(id).orElseThrow(() -> new RuntimeException("Contrat introuvable"));
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PdfWriter writer = new PdfWriter(outputStream);
+            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+
+            // Ajouter du contenu au PDF
+            document.add(new Paragraph("Contrat #" + contrat.getIdContrat()));
+            document.add(new Paragraph("Date de Création : " + contrat.getDateCreation()));
+            document.add(new Paragraph("Statut : " + contrat.getStatut().toString()));
+            document.add(new Paragraph("Facture Associée : " + contrat.getFacture().getIdFacture()));
+
+            document.close();
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la génération du PDF", e);
+        }
+    }
 
 
 

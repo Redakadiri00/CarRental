@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "vehicule")
+//@Table(name = "vehicule")
 public class Vehicule {
 
     @Id
@@ -23,8 +23,8 @@ public class Vehicule {
 
     @ElementCollection(targetClass = Caracteristique_voiture.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "vehicule_caracteristiques")
-    @Column(name = "caracteristique")
+   /* @CollectionTable(name = "vehicule_caracteristiques")
+    @Column(name = "caracteristique")*/
     @JsonProperty("caracteristique")
     private Set<Caracteristique_voiture> caracteristique;
 

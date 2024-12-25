@@ -26,9 +26,9 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> createClient(@Valid @RequestBody ClientDTO clientDTO) {
+    public ResponseEntity<ClientDTO> createClient(@Valid @RequestBody Client client) {
         try {
-            Client clientCreated = clientService.createClient(clientMapper.toEntity(clientDTO));
+            Client clientCreated = clientService.createClient(client);
             return ResponseEntity.status(HttpStatus.CREATED)
                                  .body(clientMapper.toDTO(clientCreated));
         } catch (Exception e) {

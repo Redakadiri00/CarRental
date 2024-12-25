@@ -1,16 +1,20 @@
 package com.CarRentalProject.CarRental.Models;
 
-import jakarta.persistence.*;
+import com.CarRentalProject.CarRental.Enums.AdminLevel;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "admins")
+@DiscriminatorValue("ADMIN")
 public class Admin extends User {
 
-    public Admin() {
-    }
-
-    public Admin(String name, String surname, String adress, String phone, String birthdate, String status) {
-        super();
-    }
-
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "admin_level", nullable = false)
+    private AdminLevel adminLevel;
 }

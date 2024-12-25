@@ -16,8 +16,7 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-                .authorizeRequests(requests -> requests.anyRequest().permitAll()); // Allow all requests
-
+                .authorizeRequests(requests -> requests.anyRequest().permitAll()); // Allow all request
         return http.build();
     }
 }

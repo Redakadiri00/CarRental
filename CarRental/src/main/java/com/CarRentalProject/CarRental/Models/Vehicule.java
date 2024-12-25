@@ -12,7 +12,7 @@ public class Vehicule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer Id;
     private String marque;
     private String model;
     private String type;
@@ -102,10 +102,10 @@ public class Vehicule {
     }
 
     public Integer getId_voiture() {
-        return id;
+        return Id;
     }
 
     public void setId_voiture(Integer Id) {
-        this.id = Id;
+        this.Id = Id;
     }
 }

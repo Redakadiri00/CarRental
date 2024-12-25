@@ -85,11 +85,8 @@ public class FactureService implements FactureServiceInterface {
 
     @Override
     public Double calculerMontantTotal(Reservation reservation) {
-        Date dateDebut = reservation.getDateDebut();
-        Date dateFin = reservation.getDateFin();
-
-        LocalDate localDateDebut = dateDebut.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate localDateFin = dateFin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDateDebut = reservation.getDateDebut();
+        LocalDate localDateFin = reservation.getDateFin();
 
         long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
         return (double) (duree * reservation.getVehicule().getTarif_de_location());

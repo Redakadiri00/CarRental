@@ -28,6 +28,7 @@ public class VehiculeController {
         return vehiculeService.getAllVehicules();
     }
 
+   // not working
     @GetMapping("/{id}")
     public Vehicule getVehiculeById(@PathVariable Integer id){
         return vehiculeService.getVehiculeById(id);

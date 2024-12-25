@@ -17,4 +17,12 @@ public class Admin extends User {
     @Enumerated(EnumType.STRING)
     @Column(name = "admin_level", nullable = false)
     private AdminLevel adminLevel;
+
+    public @NotNull AdminLevel getAdminLevel() {
+        return adminLevel;
+    }
+
+    public void setAdminLevel(@NotNull AdminLevel adminLevel) {
+        this.adminLevel = adminLevel;
+    }
 }

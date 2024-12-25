@@ -18,4 +18,6 @@ public class ClientDTO extends BaseDTO {
     
     private Boolean verifiedDriver;
     private Integer membershipPoints;
+
+    //test
 }

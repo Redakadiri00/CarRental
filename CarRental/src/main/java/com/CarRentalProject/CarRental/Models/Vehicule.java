@@ -7,12 +7,12 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "vehicule")
+//@Table(name = "vehicule")
 public class Vehicule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
     private String marque;
     private String model;
     private String type;
@@ -25,10 +25,11 @@ public class Vehicule {
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Caracteristique_voiture.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "vehicule_caracteristiques")
-    @Column(name = "caracteristique")
+   /* @CollectionTable(name = "vehicule_caracteristiques")
+    @Column(name = "caracteristique")*/
     @JsonProperty("caracteristique")
     private Set<Caracteristique_voiture> caracteristique;
+
 
     public Vehicule(Integer Id, String marque, String model, String type, int tarif, Status_Voiture status_voiture, String imageVoiture, Set<Caracteristique_voiture> caracteristique) {
         this.Id = Id;
@@ -101,10 +102,10 @@ public class Vehicule {
     }
 
     public Integer getId_voiture() {
-        return Id;
+        return id;
     }
 
     public void setId_voiture(Integer Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 }

@@ -1,5 +1,7 @@
 package com.CarRentalProject.CarRental.Models;
 
+import com.CarRentalProject.CarRental.Enums.StatutContrat;
+import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import jakarta.persistence.*;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import java.util.Date;
@@ -10,11 +12,14 @@ public class Contrat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idContrat;
 
+    @Enumerated(EnumType.STRING)
+    private StatutContrat statut;   // Enumération pour les statuts de contrat (En cours, Terminé)
+
     @Temporal(TemporalType.DATE)
     private Date dateCreation;
 
     @OneToOne
-    @JoinColumn(name = "facture_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Facture facture; // Un contrat est lié à une facture.
 
     public Long getIdContrat() {
@@ -41,6 +46,14 @@ public class Contrat {
         this.facture = facture;
     }
 
+    public StatutContrat getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutContrat statut) {
+        this.statut = statut;
+    }
+
   /*  public Reservation getReservation() {
         return reservation;
     }
@@ -53,6 +66,7 @@ public class Contrat {
     public String toString() {
         return "Contrat{" +
                 "idContrat=" + idContrat +
+                ", statut=" + statut +
                 ", dateCreation=" + dateCreation +
                 ", facture=" + facture +
                 '}';

@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+
 @Table(name = "users", indexes = {
     @Index(name = "idx_email", columnList = "email"),
     @Index(name = "idx_phone", columnList = "phone")
@@ -58,6 +59,7 @@ public class User {
     @UpdateTimestamp
     @Column(name = "last_updated_date", nullable = false)
     private LocalDate lastUpdatedDate;
+
 
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -2,6 +2,7 @@ package com.CarRentalProject.CarRental.Models;
 
 import jakarta.persistence.*;
 
+
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -11,6 +12,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer  id;
     private LocalDate dateDebut;
     private LocalDate dateFin;

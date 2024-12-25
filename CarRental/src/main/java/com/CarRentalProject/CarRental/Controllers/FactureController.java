@@ -4,6 +4,9 @@ import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Services.FactureServiceInterface;
 import com.CarRentalProject.CarRental.Services.FactureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -38,4 +41,14 @@ public class FactureController {
     public Facture updateFacture(@PathVariable Long id, @RequestBody Facture facture) {
         return factureService.updateFacture(id, facture);
     }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> telechargerFacturePdf(@PathVariable Long id) {
+        byte[] pdf = factureService.genererFacturePdf(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=facture-" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
 }

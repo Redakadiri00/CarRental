@@ -1,0 +1,60 @@
+.searchContainer {
+    display: flex;
+    max-width: 105px;
+    flex-direction: row;
+    color: var(--Label-Colors-LC-L-Secondary, rgba(60, 60, 67, 0.6));
+    white-space: nowrap;
+    justify-content: start;
+    gap: 8px;   
+  }
+  
+  .searchInputWrapper {
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid var(--System-Materials-SM-L-Thick, rgba(141, 141, 141, 0.93));
+    background: var(--System-Materials-SM-L-Thick, rgba(237, 237, 237, 0.93));
+    display: flex;
+    min-height: 36px;
+    width: 100%;
+    justify-content: start;
+    padding: 4px 8px;
+  }
+  
+  .searchButton > svg {
+    fill: var(--Label-Colors-LC-L-Secondary, rgba(226, 108, 34, 0.6));
+    
+  }
+  .searchButton {
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    background: transparent;
+  }
+  
+  .searchInput {
+    font-feature-settings: "liga" off, "clig" off;
+    letter-spacing: -0.41px;
+    align-self: stretch;
+    flex: 1;
+    flex-basis: 12px;
+    margin: auto 0;
+    font: 400 17px/1 SF Pro Text, -apple-system, Roboto, Helvetica, sans-serif;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }

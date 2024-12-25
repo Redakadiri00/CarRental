@@ -19,7 +19,7 @@ public class Contrat {
     private Date dateCreation;
 
     @OneToOne
-    @JoinColumn(name = "facture_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Facture facture; // Un contrat est lié à une facture.
 
     public Long getIdContrat() {

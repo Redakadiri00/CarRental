@@ -11,7 +11,7 @@ public class Vehicule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
     private String marque;
     private String model;
     private String type;
@@ -29,7 +29,7 @@ public class Vehicule {
     private Set<Caracteristique_voiture> caracteristique;
 
     public Vehicule(Integer Id, String marque, String model, String type, int tarif, String status_voiture, String imageVoiture, Set<Caracteristique_voiture> caracteristique) {
-        this.Id = Id;
+        this.id = Id;
         this.marque = marque;
         this.model = model;
         this.type = type;
@@ -99,10 +99,10 @@ public class Vehicule {
     }
 
     public Integer getId_voiture() {
-        return Id;
+        return id;
     }
 
     public void setId_voiture(Integer Id) {
-        this.Id = Id;
+        this.id = Id;
     }
 }

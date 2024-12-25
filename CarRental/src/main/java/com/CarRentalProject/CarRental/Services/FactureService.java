@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.kernel.pdf.PdfDocument;
+/*import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;*/
 import java.io.ByteArrayOutputStream;
 
 @Service // Déclare la classe comme un bean de service Spring
@@ -82,7 +85,13 @@ public class FactureService implements FactureServiceInterface {
 
     @Override
     public Double calculerMontantTotal(Reservation reservation) {
-        long duree = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
+        Date dateDebut = reservation.getDateDebut();
+        Date dateFin = reservation.getDateFin();
+
+        LocalDate localDateDebut = dateDebut.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDateFin = dateFin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
         return (double) (duree * reservation.getVehicule().getTarif_de_location());
     }
 
@@ -102,7 +111,7 @@ public class FactureService implements FactureServiceInterface {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
-            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+            /*Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
 
             // Ajouter du contenu au PDF
             document.add(new Paragraph("Facture #" + facture.getIdFacture()));
@@ -110,7 +119,7 @@ public class FactureService implements FactureServiceInterface {
             document.add(new Paragraph("Montant Total : " + facture.getMontantTotal() + " €"));
             document.add(new Paragraph("Statut : " + facture.getStatut().toString()));
 
-            document.close();
+            document.close();*/
             return outputStream.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la génération du PDF", e);

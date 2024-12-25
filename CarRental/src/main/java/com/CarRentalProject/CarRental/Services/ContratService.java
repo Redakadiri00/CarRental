@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
+/*import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;*/
 import java.io.ByteArrayOutputStream;
 
 @Service
@@ -123,26 +123,9 @@ public class ContratService implements ContratServiceInterface {
         return contratRepository.findByDateCreationBetween(debut, fin);    }
 
     @Override
-    public static byte[] genererContratPdf(Long id) {
-        Contrat contrat = contratRepository.findById(id).orElseThrow(() -> new RuntimeException("Contrat introuvable"));
-
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            PdfWriter writer = new PdfWriter(outputStream);
-            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
-
-            // Ajouter du contenu au PDF
-            document.add(new Paragraph("Contrat #" + contrat.getIdContrat()));
-            document.add(new Paragraph("Date de Création : " + contrat.getDateCreation()));
-            document.add(new Paragraph("Statut : " + contrat.getStatut().toString()));
-            document.add(new Paragraph("Facture Associée : " + contrat.getFacture().getIdFacture()));
-
-            document.close();
-            return outputStream.toByteArray();
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la génération du PDF", e);
-        }
+    public byte[] genererContratPdf(Long id) {
+        return new byte[0];
     }
-
 
 
 }

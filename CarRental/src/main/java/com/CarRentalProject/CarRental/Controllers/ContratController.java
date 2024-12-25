@@ -45,7 +45,7 @@ public class ContratController {
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> telechargerContratPdf(@PathVariable Long id) {
-        byte[] pdf = ContratService.genererContratPdf(id);
+        byte[] pdf = contratService.genererContratPdf(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contrat-" + id + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)

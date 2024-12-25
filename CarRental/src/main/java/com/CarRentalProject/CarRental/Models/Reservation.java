@@ -1,16 +1,42 @@
 package com.CarRentalProject.CarRental.Models;
 
-import java.time.temporal.Temporal;
+import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
 public class Reservation {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Temporal(TemporalType.DATE)
     private Date dateDebut;
+
+    @Temporal(TemporalType.DATE)
     private Date dateFin;
+
+    @Temporal(TemporalType.DATE)
     private Date dateReservation;
+
+    @Enumerated(EnumType.STRING)
     private Status_reservation statusReservation;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private Vehicule vehicule;
-    //private Client client;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Reservation() {
     }
@@ -32,16 +58,16 @@ public class Reservation {
         this.id = id;
     }
 
-    public Temporal getDateDebut() {
-        return (Temporal) dateDebut;
+    public Date getDateDebut() {
+        return dateDebut;
     }
 
     public void setDateDebut(Date dateDebut) {
         this.dateDebut = dateDebut;
     }
 
-    public Temporal getDateFin() {
-        return (Temporal) dateFin;
+    public Date getDateFin() {
+        return dateFin;
     }
 
     public void setDateFin(Date dateFin) {
@@ -71,5 +97,4 @@ public class Reservation {
     public void setVehicule(Vehicule vehicule) {
         this.vehicule = vehicule;
     }
-
 }

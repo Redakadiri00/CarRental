@@ -29,7 +29,7 @@ public class Facture {
 
 
     @ManyToOne
-    @JoinColumn(name = "reservation_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Reservation reservation; // Une facture est liée à une réservation (relation ManyToOne)
 
 

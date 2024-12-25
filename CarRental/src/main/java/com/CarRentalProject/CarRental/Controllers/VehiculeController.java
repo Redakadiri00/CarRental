@@ -28,6 +28,11 @@ public class VehiculeController {
         return vehiculeService.getAllVehicules();
     }
 
+    @GetMapping("/{id}")
+    public Vehicule getVehiculeById(@PathVariable Integer id){
+        return vehiculeService.getVehiculeById(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteVehicule(@PathVariable int id) {
         vehiculeService.deleteVehicule(id);

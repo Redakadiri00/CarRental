@@ -59,7 +59,7 @@ public class VehiculeService implements VehiculeServiceInterface {
 //    }
 
 
-
+    @Override
     public Vehicule getVehiculeById(Integer id) {
         return vehiculeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vehicule not found with ID: " + id));

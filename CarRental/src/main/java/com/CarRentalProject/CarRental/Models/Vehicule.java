@@ -16,6 +16,8 @@ public class Vehicule {
     private String marque;
     private String model;
     private String type;
+    @Column(nullable = false)
+
     private int tarif;
 
     @Enumerated(EnumType.STRING)

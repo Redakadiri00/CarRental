@@ -5,6 +5,7 @@ import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Repositories.VehiculeRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -52,10 +53,16 @@ public class VehiculeService implements VehiculeServiceInterface {
         return vehiculeRepository.findByTarifBetween(tarifmin, tarifmax);
     }
 
+//    @Override
+//   public  List<Vehicule> getVehiculeByDateEntre(LocalDate dateDebut, LocalDate dateFin){
+//        return VehiculeRepository.findAvailableVehicules(dateDebut, dateFin);
+//    }
+
 
     @Override
-    public Vehicule getVehiculeById(int id) {
-        return null;
+    public Vehicule getVehiculeById(Integer id) {
+        return vehiculeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicule not found with ID: " + id));
     }
 
     @Override

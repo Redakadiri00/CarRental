@@ -13,21 +13,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
-                .authorizeRequests(requests -> {
-                    try {
-                        requests
-                        .requestMatchers("/api/contrats").permitAll() // Allow access to /api/user/add
-                        .anyRequest().authenticated()
-                        .and()
-                        .formLogin(login -> login.permitAll())
-                        .logout(logout -> logout.permitAll());
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                });
-
+                .cors()
+                .and()
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+                .authorizeRequests(requests -> requests.anyRequest().permitAll()); // Allow all request
         return http.build();
     }
 }

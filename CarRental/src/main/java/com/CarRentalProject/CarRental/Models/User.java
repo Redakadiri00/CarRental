@@ -1,142 +1,78 @@
 package com.CarRentalProject.CarRental.Models;
 
-import java.sql.Date;
-
+import java.time.LocalDate;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.CarRentalProject.CarRental.Enums.UserStatus;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+
+@Table(name = "users", indexes = {
+    @Index(name = "idx_email", columnList = "email"),
+    @Index(name = "idx_phone", columnList = "phone")
+})
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 50)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @NotNull
+    @Size(min = 5, max = 50)
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 50)
-    private String adress;
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "address", nullable = false, length = 100)
+    private String address;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @NotNull
+    @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+    @Column(name = "phone", nullable = false, unique = true, length = 50)
     private String phone;
 
-    @Column(nullable = false)
-    private Date birthdate;
+    @NotNull
+    @Column(name = "birthdate", nullable = false)
+    private LocalDate birthdate;
 
-    @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private Date registrationDate;
+    @Column(name = "registration_date", nullable = false, updatable = false)
+    private LocalDate registrationDate;
 
-    @Column(nullable = false, length = 50)
-    private String status;
+    @UpdateTimestamp
+    @Column(name = "last_updated_date", nullable = false)
+    private LocalDate lastUpdatedDate;
 
-    @Column(nullable = false, length = 50, unique = true)
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
+    private UserStatus status;
+
+    @NotNull
+    @Email
+    @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false, length = 50)
+    @NotNull
+    @Size(min = 8, max = 100)
+    @Column(name = "password", nullable = false)
     private String password;
-
-    // Constructors
-    public User() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAdress() {
-        return adress;
-    }
-
-    public void setAdress(String adress) {
-        this.adress = adress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public User(String name, String username, String adress, String phone, Date birthdate, String status, String email,
-                String password) {
-        this.name = name;
-        this.username = username;
-        this.adress = adress;
-        this.phone = phone;
-        this.birthdate = birthdate;
-        this.status = status;
-        this.email = email;
-        this.password = password;
-    }
 }

@@ -1,6 +1,6 @@
 package com.CarRentalProject.CarRental.Mappers;
 
-import com.CarRentalProject.CarRental.DTOs.ClientDTO;
+import com.CarRentalProject.CarRental.DTO.ClientDTO;
 import com.CarRentalProject.CarRental.Models.Client;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

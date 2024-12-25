@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.DTOs;
+package com.CarRentalProject.CarRental.DTO;
 
 import com.CarRentalProject.CarRental.Enums.AdminLevel;
 import jakarta.validation.constraints.NotNull;

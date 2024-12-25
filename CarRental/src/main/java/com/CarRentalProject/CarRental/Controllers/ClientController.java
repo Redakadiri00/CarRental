@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.CarRentalProject.CarRental.DTOs.ClientDTO;
+import com.CarRentalProject.CarRental.DTO.ClientDTO;
 import com.CarRentalProject.CarRental.Mappers.ClientMapper;
 import com.CarRentalProject.CarRental.Models.Client;
 import com.CarRentalProject.CarRental.Services.ClientService;

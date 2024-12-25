@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.DTOs;
+package com.CarRentalProject.CarRental.DTO;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

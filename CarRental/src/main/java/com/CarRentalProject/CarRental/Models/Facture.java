@@ -27,12 +27,12 @@ public class Facture {
     @Enumerated(EnumType.STRING)
     private StatutFacture statut;   // Enumération pour les statuts de facture (Payée, Non payée)
 
-/*
+
     @ManyToOne
-    @JoinColumn(name = "reservation_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Reservation reservation; // Une facture est liée à une réservation (relation ManyToOne)
 
-*/
+
 
     public Long getIdFacture() {
         return idFacture;
@@ -72,6 +72,14 @@ public class Facture {
 
     public void setStatut(StatutFacture statut) {
         this.statut = statut;
+    }
+
+    public Reservation getReservation() {
+        return reservation;
+    }
+
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 
     @Override

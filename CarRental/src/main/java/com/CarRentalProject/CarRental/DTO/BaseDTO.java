@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.DTOs;
+package com.CarRentalProject.CarRental.DTO;
 
 import lombok.Data;
 import java.time.LocalDateTime;

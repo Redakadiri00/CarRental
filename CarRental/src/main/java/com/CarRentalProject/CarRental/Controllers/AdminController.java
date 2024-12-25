@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.CarRentalProject.CarRental.DTOs.AdminDTO;
+import com.CarRentalProject.CarRental.DTO.AdminDTO;
 import com.CarRentalProject.CarRental.Enums.AdminLevel;
 import com.CarRentalProject.CarRental.Mappers.AdminMapper;
 import com.CarRentalProject.CarRental.Models.Admin;

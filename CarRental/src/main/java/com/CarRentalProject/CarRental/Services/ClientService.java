@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.CarRentalProject.CarRental.DTOs.ClientDTO;
+import com.CarRentalProject.CarRental.DTO.ClientDTO;
 import com.CarRentalProject.CarRental.Enums.UserStatus;
 import com.CarRentalProject.CarRental.Models.Client;
 import com.CarRentalProject.CarRental.Repositories.ClientRepository;

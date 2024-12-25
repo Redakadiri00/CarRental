@@ -16,7 +16,9 @@ public interface FactureServiceInterface {
     public Facture updateFacture(Long id, Facture facture);
 
     // Logique métier
+/*
     public Facture creerFactureAvecMontant(Reservation reservation); // Génère une facture avec montant
+*/
     public Facture marquerCommePayee(Long id); // Marque la facture comme PAYEE
     public Double calculerMontantTotal(Reservation reservation); // Calcule le montant total d'une facture
     /*Réutilisation :

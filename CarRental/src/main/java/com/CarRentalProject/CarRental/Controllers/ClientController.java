@@ -29,6 +29,7 @@ public class ClientController {
     public ResponseEntity<ClientDTO> createClient(@Valid @RequestBody Client client) {
         try {
             Client clientCreated = clientService.createClient(client);
+
             System.out.println(clientCreated);
             return ResponseEntity.status(HttpStatus.CREATED)
                                  .body(clientMapper.toDTO(clientCreated));

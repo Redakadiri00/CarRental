@@ -4,6 +4,7 @@ import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Repositories.FactureRepository;
+import com.CarRentalProject.CarRental.Repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class FactureService implements FactureServiceInterface {
     @Autowired
     private ContratService contratService;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
     public List<Facture> getAllFactures() {
         return factureRepository.findAll();
     }
@@ -50,11 +54,16 @@ public class FactureService implements FactureServiceInterface {
         existingFacture.setMontantTotal(facture.getMontantTotal());
         existingFacture.setModePaiement(facture.getModePaiement());
         existingFacture.setStatut(facture.getStatut());
-//        existingFacture.setReservation(facture.getReservation());
+        existingFacture.setReservation(facture.getReservation());
         return factureRepository.save(existingFacture);
     }
 
-    public Facture creerFactureAvecMontant(Reservation reservation) { // Génère une facture avec montant à partir d'une réservation donnée
+   public Facture creerFactureAvecMontant(Reservation reservation) { // Génère une facture avec montant à partir d'une réservation donnée
+
+       if (reservation.getId() == 0) {
+           reservation = reservationRepository.save(reservation);
+       }
+
         Facture facture = new Facture();
         facture.setDateFacturation(new Date());
 

@@ -45,7 +45,7 @@ public class VehiculeController {
         return vehiculeService.updateVehicule(vehicule);
     }
 
-    @GetMapping("/{marque}")
+    @GetMapping("/marque/{marque}")
     public List<String> getModelByMarque(@PathVariable("marque") String marque) {
         return vehiculeService.getModelByMarque(marque);
     }

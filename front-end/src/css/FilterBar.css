@@ -6,6 +6,7 @@
     white-space: nowrap;
     justify-content: start;
     gap: 8px;   
+    margin-bottom: 20px;
   }
   
   .searchInputWrapper {

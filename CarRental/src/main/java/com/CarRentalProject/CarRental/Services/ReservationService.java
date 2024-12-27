@@ -1,6 +1,7 @@
 package com.CarRentalProject.CarRental.Services;
 
 import com.CarRentalProject.CarRental.Models.Reservation;
+import com.CarRentalProject.CarRental.Models.Status_reservation;
 import com.CarRentalProject.CarRental.Models.User;
 import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Repositories.ReservationRepository;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -28,7 +28,7 @@ public class ReservationService implements ReservationServiceInterface {
     }
 
 
-    public void Reserver(LocalDate dateDebut, LocalDate dateFin, Vehicule vehicule, User client) {
+    public Reservation Reserver(LocalDate dateDebut, LocalDate dateFin, Vehicule vehicule, User client) {
         if (dateDebut.isAfter(dateFin)) {
             throw new IllegalArgumentException("Date de debut doit etre avant la date de fin");
         }
@@ -44,9 +44,9 @@ public class ReservationService implements ReservationServiceInterface {
         reservation.setDateDebut(dateDebut);
         reservation.setDateFin(dateFin);
         reservation.setDateReservation(LocalDate.now());
-        // reservation.setStatusReservation(Status_reservation.PENDING); // Assuming you have a status enum
+        reservation.setStatusReservation(Status_reservation.NonConfirmed);
 
-        reservationRepository.save(reservation);
+        return reservationRepository.save(reservation);
     }
 
     @Override

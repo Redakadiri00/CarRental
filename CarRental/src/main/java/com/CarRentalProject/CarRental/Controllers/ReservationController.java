@@ -28,14 +28,14 @@ public class ReservationController {
     }
 
     @PostMapping
-    public void makeReservation(@RequestBody ReservationDTO reservationDTO) {
+    public Reservation makeReservation(@RequestBody ReservationDTO reservationDTO) {
         if (reservationDTO.getVehiculeId() == null || reservationDTO.getClientId() == null) {
             throw new IllegalArgumentException("Vehicule ID and Client ID must not be null");
         }
 
         Vehicule vehicule = vehiculeService.getVehiculeById(reservationDTO.getVehiculeId());
         User client = userService.getUserById(reservationDTO.getClientId());
-        reservationService.Reserver(reservationDTO.getDateDebut(), reservationDTO.getDateFin(), vehicule, client);
+       return  reservationService.Reserver(reservationDTO.getDateDebut(), reservationDTO.getDateFin(), vehicule, client);
     }
 
     @GetMapping

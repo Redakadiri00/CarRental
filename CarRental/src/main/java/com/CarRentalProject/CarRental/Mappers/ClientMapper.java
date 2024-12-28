@@ -1,7 +1,9 @@
 package com.CarRentalProject.CarRental.Mappers;
 
 import com.CarRentalProject.CarRental.DTO.ClientDTO;
-import com.CarRentalProject.CarRental.Models.Client;
+import com.CarRentalProject.CarRental.DTO.RegistryDTO;
+import com.CarRentalProject.CarRental.Models.UserModels.Client;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,7 @@ public class ClientMapper {
         return modelMapper.map(client, ClientDTO.class);
     }
     
-    public Client toEntity(ClientDTO dto) {
-        return modelMapper.map(dto, Client.class);
+    public Client toEntity(RegistryDTO clientDTO) {
+        return modelMapper.map(clientDTO, Client.class);
     }
 }

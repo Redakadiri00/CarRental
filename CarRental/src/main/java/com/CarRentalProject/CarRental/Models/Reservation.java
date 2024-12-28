@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 
+import com.CarRentalProject.CarRental.Models.UserModels.User;
+import com.CarRentalProject.CarRental.Services.Status_reservation;
+
 @Entity
 @Table(name="reservation")
 public class Reservation {

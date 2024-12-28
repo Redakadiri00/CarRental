@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "The secret key used to sign the JWT"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "The time in milliseconds the JWT is valid for"
+  },
+  {
+    "name": "app.url",
+    "type": "java.lang.String",
+    "description": "The URL of the application"
+  },
+  {
+    "name": "jwt.expirationEmail",
+    "type": "java.lang.String",
+    "description": "The time in milliseconds the JWT is valid for when sending an email"
+  }
+]}

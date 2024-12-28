@@ -2,11 +2,12 @@ package com.CarRentalProject.CarRental.Controllers;
 
 import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Models.Reservation;
-import com.CarRentalProject.CarRental.Models.User;
 import com.CarRentalProject.CarRental.Models.Vehicule;
+import com.CarRentalProject.CarRental.Models.UserModels.User;
 import com.CarRentalProject.CarRental.Services.ReservationService;
-import com.CarRentalProject.CarRental.Services.UserService;
 import com.CarRentalProject.CarRental.Services.VehiculeService;
+import com.CarRentalProject.CarRental.Services.UserServices.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

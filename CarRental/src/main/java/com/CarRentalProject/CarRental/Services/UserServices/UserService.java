@@ -1,13 +1,13 @@
-package com.CarRentalProject.CarRental.Services;
+package com.CarRentalProject.CarRental.Services.UserServices;
 
 import com.CarRentalProject.CarRental.Models.Vehicule;
+import com.CarRentalProject.CarRental.Models.UserModels.User;
+import com.CarRentalProject.CarRental.Repositories.UserRepositories.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.CarRentalProject.CarRental.Models.User;
-import com.CarRentalProject.CarRental.Repositories.UserRepository;
 
 import jakarta.persistence.EntityExistsException;
 
@@ -24,8 +24,11 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        System.err.println("validating user");
         validateNewUser(user);
+        System.err.println("hashing password");
         user.setPassword(PasswordHashing.hashPassword(user.getPassword()));
+        System.err.println("saving user");
         return userRepository.save(user);
     }
 

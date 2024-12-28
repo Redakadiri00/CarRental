@@ -22,8 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.CarRentalProject.CarRental.DTO.ClientDTO;
 import com.CarRentalProject.CarRental.Enums.UserStatus;
-import com.CarRentalProject.CarRental.Models.Client;
-import com.CarRentalProject.CarRental.Repositories.ClientRepository;
+import com.CarRentalProject.CarRental.Models.UserModels.Client;
+import com.CarRentalProject.CarRental.Repositories.UserRepositories.ClientRepository;
+import com.CarRentalProject.CarRental.Services.UserServices.ClientService;
+import com.CarRentalProject.CarRental.Services.UserServices.UserService;
 
 @SpringBootTest
 public class ClientServiceTest {

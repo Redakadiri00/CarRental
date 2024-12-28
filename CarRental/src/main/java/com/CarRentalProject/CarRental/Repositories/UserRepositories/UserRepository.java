@@ -1,11 +1,11 @@
-package com.CarRentalProject.CarRental.Repositories;
-
-import com.CarRentalProject.CarRental.Models.User;
+package com.CarRentalProject.CarRental.Repositories.UserRepositories;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.CarRentalProject.CarRental.Models.UserModels.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {

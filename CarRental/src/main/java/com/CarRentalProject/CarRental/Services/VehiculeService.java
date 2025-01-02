@@ -48,6 +48,15 @@ public class VehiculeService implements VehiculeServiceInterface {
         return vehiculeRepository.getModelByMarque(marque);
     }
 
+    public List<String> getMarque(){
+        return vehiculeRepository.getMarqueOfVehicules();
+    }
+
+    public List<String> getModelOfMarque(String marque){
+        return vehiculeRepository.getModelByMarque(marque);
+    }
+
+
     @Override
     public List<Vehicule> getVehiculeByTarifBetween(int tarifmin, int tarifmax) {
         return vehiculeRepository.findByTarifBetween(tarifmin, tarifmax);
@@ -72,7 +81,7 @@ public class VehiculeService implements VehiculeServiceInterface {
 
     @Override
     public List<Vehicule> getVehiculeByMarque(String marque) {
-        return List.of();
+        return vehiculeRepository.findByMarque(marque);
     }
 
     @Override

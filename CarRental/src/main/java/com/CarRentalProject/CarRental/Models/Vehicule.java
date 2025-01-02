@@ -27,8 +27,8 @@ public class Vehicule {
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Caracteristique_voiture.class)
     @Enumerated(EnumType.STRING)
-   /* @CollectionTable(name = "vehicule_caracteristiques")
-    @Column(name = "caracteristique")*/
+    @CollectionTable(name = "vehicule_caracteristiques")
+    @Column(name = "caracteristique")
     @JsonProperty("caracteristique")
     private Set<Caracteristique_voiture> caracteristique;
 

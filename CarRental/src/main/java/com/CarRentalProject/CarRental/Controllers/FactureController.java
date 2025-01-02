@@ -1,6 +1,8 @@
 package com.CarRentalProject.CarRental.Controllers;
 
+import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Models.Facture;
+import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Services.FactureServiceInterface;
 import com.CarRentalProject.CarRental.Services.FactureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,8 @@ public class FactureController {
     }
 
     @PostMapping
-    public Facture saveFacture(@RequestBody Facture facture) {
-        return factureService.saveFacture(facture);
+    public Facture creerFactureAvecMontant(@RequestBody ReservationDTO reservation) {
+        return factureService.creerFactureAvecMontant(reservation);
     }
 
     @DeleteMapping("/{id}")

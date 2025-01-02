@@ -1,10 +1,14 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Enums.StatutFacture;
+import com.CarRentalProject.CarRental.Enums.ModePaiement;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
+import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Repositories.FactureRepository;
 import com.CarRentalProject.CarRental.Repositories.ReservationRepository;
+import com.CarRentalProject.CarRental.Repositories.VehiculeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,9 @@ public class FactureService implements FactureServiceInterface {
 
     @Autowired
     private ReservationRepository reservationRepository;
+    
+    @Autowired
+    private VehiculeRepository vehiculeRepository;
 
     public List<Facture> getAllFactures() {
         return factureRepository.findAll();
@@ -58,10 +65,16 @@ public class FactureService implements FactureServiceInterface {
         return factureRepository.save(existingFacture);
     }
 
-   public Facture creerFactureAvecMontant(Reservation reservation) { // Génère une facture avec montant à partir d'une réservation donnée
+   public Facture creerFactureAvecMontant(ReservationDTO reservation) { // Génère une facture avec montant à partir d'une réservation donnée
 
-       if (reservation.getId() == 0) {
-           reservation = reservationRepository.save(reservation);
+       // Ensure the reservation is saved before creating the facture
+       Reservation reservationn = reservationRepository.findById(reservation.getVehiculeId())
+               .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+
+
+       // Check if the vehicule is not null
+       if (reservation.getVehiculeId() == null) {
+           throw new IllegalArgumentException("Vehicule cannot be null in the reservation");
        }
 
         Facture facture = new Facture();
@@ -71,11 +84,14 @@ public class FactureService implements FactureServiceInterface {
         Double montantTotal = calculerMontantTotal(reservation);
         facture.setMontantTotal(montantTotal);
 
+        // Mode de paiement
+        facture.setModePaiement(ModePaiement.CB);
+
         // Statut initial
         facture.setStatut(StatutFacture.NON_PAYEE);
 
         // Relation avec la réservation
-        facture.setReservation(reservation);
+        /*facture.setReservation(reservation);*/
 
         Facture savedFacture = factureRepository.save(facture);
 
@@ -93,12 +109,17 @@ public class FactureService implements FactureServiceInterface {
     }
 
     @Override
-    public Double calculerMontantTotal(Reservation reservation) {
+    public Double calculerMontantTotal(ReservationDTO reservation) {
+        Vehicule vehicule = vehiculeRepository.findById(reservation.getVehiculeId())
+                .orElseThrow(() -> new IllegalArgumentException("Vehicule not found"));
+
         LocalDate localDateDebut = reservation.getDateDebut();
         LocalDate localDateFin = reservation.getDateFin();
 
         long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
-        return (double) (duree * reservation.getVehicule().getTarif_de_location());
+        double montantTotal = duree * vehicule.getTarif_de_location();
+        System.out.println("Montant total : " + montantTotal);
+        return montantTotal;
     }
 
     @Override

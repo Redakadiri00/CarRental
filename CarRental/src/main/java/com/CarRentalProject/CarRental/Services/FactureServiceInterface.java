@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
 
@@ -20,7 +21,7 @@ public interface FactureServiceInterface {
     public Facture creerFactureAvecMontant(Reservation reservation); // Génère une facture avec montant
 */
     public Facture marquerCommePayee(Long id); // Marque la facture comme PAYEE
-    public Double calculerMontantTotal(Reservation reservation); // Calcule le montant total d'une facture
+    public Double calculerMontantTotal(ReservationDTO reservation); // Calcule le montant total d'une facture
     /*Réutilisation :
 
     Si tu as besoin de calculer le montant sans créer une facture (par exemple, pour une simulation), tu peux utiliser calculerMontantTotal.

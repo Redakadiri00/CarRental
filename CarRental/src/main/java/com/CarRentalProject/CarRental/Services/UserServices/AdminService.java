@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.Services;
+package com.CarRentalProject.CarRental.Services.UserServices;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.CarRentalProject.CarRental.Enums.AdminLevel;
 import com.CarRentalProject.CarRental.Enums.UserStatus;
-import com.CarRentalProject.CarRental.Models.Admin;
-import com.CarRentalProject.CarRental.Repositories.AdminRepository;
+import com.CarRentalProject.CarRental.Models.UserModels.Admin;
+import com.CarRentalProject.CarRental.Repositories.UserRepositories.AdminRepository;
 
 @Service
 @Transactional
@@ -24,16 +24,31 @@ public class AdminService {
     }
 
     public Admin createAdmin(Admin admin) {
+        try {
+            adminRepository.findByEmail(admin.getEmail()).ifPresent(a -> {
+                throw new IllegalArgumentException("Email already exists");
+            });
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
         admin.setStatus(UserStatus.ACTIVE);
         return (Admin) userService.createUser(admin);
     }
 
     public List<Admin> getAdminsByLevel(AdminLevel level) {
-        return adminRepository.findByAdminLevel(level);
+        try {
+            return adminRepository.findByAdminLevel(level);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
     }
 
     public Admin getAdminByEmail(String email) {
-        return adminRepository.findByEmail(email).orElse(null);
+        try {
+            return adminRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
     }
 
     public Admin getAdminById(int id) {
@@ -41,10 +56,18 @@ public class AdminService {
     }
 
     public Admin updateAdmin(Admin admin) {
-        return adminRepository.save(admin);
+        try {
+            return adminRepository.save(admin);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
     }
 
     public void deleteAdmin(Admin admin) {
-        adminRepository.delete(admin);
+        try {
+            adminRepository.delete(admin);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
     }
 }

@@ -1,7 +1,7 @@
-package com.CarRentalProject.CarRental.Repositories;
+package com.CarRentalProject.CarRental.Repositories.UserRepositories;
 
 import com.CarRentalProject.CarRental.Enums.AdminLevel;
-import com.CarRentalProject.CarRental.Models.Admin;
+import com.CarRentalProject.CarRental.Models.UserModels.Admin;
 
 import java.util.List;
 import java.util.Optional;

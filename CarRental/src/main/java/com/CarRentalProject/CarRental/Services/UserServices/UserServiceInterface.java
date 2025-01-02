@@ -1,6 +1,6 @@
-package com.CarRentalProject.CarRental.Services;
+package com.CarRentalProject.CarRental.Services.UserServices;
 
-import com.CarRentalProject.CarRental.Models.User;
+import com.CarRentalProject.CarRental.Models.UserModels.User;
 
 public interface UserServiceInterface {
 

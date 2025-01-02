@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.Models;
+package com.CarRentalProject.CarRental.Models.UserModels;
 
 import java.time.LocalDate;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +10,44 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+/**
+ * Represents a user in the Car Rental system.
+ * This class is annotated as an entity and mapped to the "users" table in the database.
+ * It includes various fields such as name, username, address, phone, birthdate, registration date, last updated date, status, email, and password.
+ * The class uses Lombok annotations for boilerplate code reduction and Hibernate annotations for ORM mapping.
+ * 
+ * Annotations:
+ * - @Data: Lombok annotation to generate getters, setters, toString, equals, and hashCode methods.
+ * - @Builder: Lombok annotation to implement the builder pattern.
+ * - @AllArgsConstructor: Lombok annotation to generate a constructor with all fields.
+ * - @NoArgsConstructor: Lombok annotation to generate a no-argument constructor.
+ * - @Entity: Specifies that the class is an entity and is mapped to a database table.
+ * - @Table: Specifies the primary table for the annotated entity and indexes on email and phone columns.
+ * - @Inheritance: Specifies the inheritance strategy for the entity.
+ * - @DiscriminatorColumn: Specifies the column used for the discriminator value in the inheritance hierarchy.
+ * - @Id: Specifies the primary key of the entity.
+ * - @GeneratedValue: Provides the specification of generation strategies for the primary keys.
+ * - @NotNull: Specifies that a field cannot be null.
+ * - @Size: Specifies the size constraints for a field.
+ * - @Pattern: Specifies the regular expression that a field must match.
+ * - @CreationTimestamp: Specifies that the field should be populated with the current timestamp when the entity is created.
+ * - @UpdateTimestamp: Specifies that the field should be populated with the current timestamp when the entity is updated.
+ * - @Enumerated: Specifies that a persistent property or field should be persisted as an enumerated type.
+ * - @Email: Specifies that a field must be a valid email address.
+ * 
+ * Fields:
+ * - id: The unique identifier for the user.
+ * - name: The name of the user.
+ * - username: The username of the user.
+ * - address: The address of the user.
+ * - phone: The phone number of the user.
+ * - birthdate: The birthdate of the user.
+ * - registrationDate: The date when the user registered.
+ * - lastUpdatedDate: The date when the user's information was last updated.
+ * - status: The status of the user.
+ * - email: The email address of the user.
+ * - password: The password of the user.
+ */
 @Data
 @Builder
 @AllArgsConstructor

@@ -1,7 +1,8 @@
 package com.CarRentalProject.CarRental.Mappers;
 
 import com.CarRentalProject.CarRental.DTO.AdminDTO;
-import com.CarRentalProject.CarRental.Models.Admin;
+import com.CarRentalProject.CarRental.Models.UserModels.Admin;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

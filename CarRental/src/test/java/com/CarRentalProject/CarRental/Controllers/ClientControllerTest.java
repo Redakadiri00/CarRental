@@ -7,8 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
-import com.CarRentalProject.CarRental.Models.Client;
-import com.CarRentalProject.CarRental.Services.ClientService;
+import com.CarRentalProject.CarRental.Models.UserModels.Client;
+import com.CarRentalProject.CarRental.Services.UserServices.ClientService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

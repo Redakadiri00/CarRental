@@ -5,9 +5,11 @@ import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Models.Status_reservation;
 import com.CarRentalProject.CarRental.Models.User;
 import com.CarRentalProject.CarRental.Models.Vehicule;
+import com.CarRentalProject.CarRental.Models.UserModels.User;
 import com.CarRentalProject.CarRental.Repositories.ReservationRepository;
-import com.CarRentalProject.CarRental.Repositories.UserRepository;
 import com.CarRentalProject.CarRental.Repositories.VehiculeRepository;
+import com.CarRentalProject.CarRental.Repositories.UserRepositories.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

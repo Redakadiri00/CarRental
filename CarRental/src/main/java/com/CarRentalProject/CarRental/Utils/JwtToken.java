@@ -52,7 +52,7 @@ public class JwtToken {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // e.g., 24 hour
+                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // e.g., 24 hours
                 .signWith(signingKey, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -68,7 +68,7 @@ public class JwtToken {
                 .setSubject(email)
                 .claim("isEmailVerification", true)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationEmail)) // e.g., 1 hours
+                .setExpiration(new Date(System.currentTimeMillis() + expirationEmail)) // e.g., 1 hour
                 .signWith(signingKey, SignatureAlgorithm.HS512)
                 .compact();
     }    

@@ -1,6 +1,5 @@
 package com.CarRentalProject.CarRental.Controllers;
 
-import com.CarRentalProject.CarRental.Config.PasswordHashing;
 import com.CarRentalProject.CarRental.DTO.RegistryDTO;
 import com.CarRentalProject.CarRental.Enums.UserStatus;
 import com.CarRentalProject.CarRental.Mappers.ClientMapper;
@@ -11,15 +10,24 @@ import com.CarRentalProject.CarRental.Services.UserServices.UserService;
 import com.CarRentalProject.CarRental.Utils.EmailSender;
 import com.CarRentalProject.CarRental.Utils.JwtToken;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
+import com.CarRentalProject.CarRental.DTO.Response.LoginResponseDTO;
+import com.CarRentalProject.CarRental.DTO.Response.UserResponseDTO;
+
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
+
 
 /**
  * AuthController handles authentication requests for the CarRental API.
@@ -49,6 +57,38 @@ public class AuthController {
     @Value("${app.url}")
     private String url;
 
+
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
+        // Retrieve the currently authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Fetch the user from the database
+        User user = userService.getUserByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserResponseDTO.builder()
+                            .message("User not found")
+                            .isAuthenticated(false)
+                            .build());
+            
+        }
+
+        // Map user to a response DTO
+        return ResponseEntity.ok().body(UserResponseDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getClass().getSimpleName().toUpperCase())
+                .message("Welcome " + user.getName())
+                .isAuthenticated(true)
+                .build());
+    }
+
     /**
      * Authenticates a user using credentials sent via headers.
      *
@@ -57,36 +97,49 @@ public class AuthController {
      * @return a JWT token as a String representing the authenticated user
      */
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(
+    public ResponseEntity<LoginResponseDTO> authenticateUser(
             @RequestHeader("X-Username") String username,
             @RequestHeader("X-Password") String password) {
         if (username == null || password == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Username and password must be provided.");
+                    .body(LoginResponseDTO.builder()
+                            .message("Username and password must be provided")
+                            .build());
         }
 
-        // try {
-        //     User user = userService.getUserByUsername(username);
-        //     if (user == null) {
-        //         user = userService.getUserByEmail(username);
-        //     } 
-        //     if (user == null) {
-        //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
-                
-        //     }
-        //     if (user.getStatus() == UserStatus.UNVERIFIED) {
-        //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not verified");
-        //     } else if (user.getStatus() != UserStatus.ACTIVE) {
-        //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not active");
-        //     }
+        try {
+            User user = userService.getUserByUsername(username);
+            if (user == null) {
+                user = userService.getUserByEmail(username);
+            } 
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
+                        .message("User not found")
+                        .build());
+            }
+            if (user.getStatus() == UserStatus.UNVERIFIED) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
+                        .message("User is not verified")
+                        .build());
+            } else if (user.getStatus() != UserStatus.ACTIVE) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
+                        .message("User is not active")
+                        .build());
+            }
 
-        // } catch (UsernameNotFoundException e) {
-        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
-        // }
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
+                    .message("User not found")
+                    .build());
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
 
-        return ResponseEntity.ok().body(jwtToken.generateToken(authentication.getName()));
+        return ResponseEntity.ok().body(LoginResponseDTO.builder()
+                .token(jwtToken.generateToken(authentication.getName()))
+                .role(userService.getUserByUsername(username).getClass().getSimpleName().toUpperCase())
+                .message("Login successful")
+                .build());
     }
 
     /**
@@ -146,6 +199,11 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token must be provided");
         }
         String email = jwtToken.extractUsername(token);
+        try {
+            email = jwtToken.extractUsername(token);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token has expired");
+        }
 
         // Check token validity and claim
         if (!jwtToken.isTokenValid(token, email)) {

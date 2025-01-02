@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Repositories;
 
+import com.CarRentalProject.CarRental.DTO.DateRangeDTO;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Models.Vehicule;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                                                              @Param("dateFin") LocalDate dateFin);
 
 
+    @Query("SELECT new com.CarRentalProject.CarRental.DTO.DateRangeDTO(r.dateDebut, r.dateFin) FROM Reservation r WHERE r.vehicule.Id = :vehiculeId")
+    List<DateRangeDTO> findReservedDatesByVehiculeId(@Param("vehiculeId") Integer vehiculeId);
 }

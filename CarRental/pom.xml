@@ -127,6 +127,14 @@
 			<version>3.1.1</version>
 		</dependency>
 
+
+		<!-- https://mvnrepository.com/artifact/com.stripe/stripe-java -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>28.2.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

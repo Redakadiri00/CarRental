@@ -20,6 +20,8 @@ public class Reservation {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private LocalDate dateReservation;
+
+    @Enumerated(EnumType.STRING)
     private Status_reservation statusReservation;
 
     @ManyToOne

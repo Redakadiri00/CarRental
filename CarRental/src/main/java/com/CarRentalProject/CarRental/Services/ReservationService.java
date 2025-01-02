@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.DTO.DateRangeDTO;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Models.Status_reservation;
 import com.CarRentalProject.CarRental.Models.User;
@@ -54,5 +55,8 @@ public class ReservationService implements ReservationServiceInterface {
         return reservationRepository.findAll();
     }
 
+    public List<DateRangeDTO> getReservedDates(Integer vehiculeId) {
+        return reservationRepository.findReservedDatesByVehiculeId(vehiculeId);
+    }
 
 }

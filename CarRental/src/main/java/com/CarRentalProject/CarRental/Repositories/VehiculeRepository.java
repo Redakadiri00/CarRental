@@ -32,4 +32,10 @@ public interface VehiculeRepository extends JpaRepository<Vehicule, Integer> {
             "(r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut))")
     List<Vehicule> findAvailableVehicules(@Param("dateDebut") LocalDate dateDebut, @Param("dateFin") LocalDate dateFin);
 
+    @Query("SELECT v.marque FROM Vehicule v group by v.marque")
+    List<String> getMarqueOfVehicules();
+
+
+
+
 }

@@ -45,15 +45,32 @@ public class VehiculeController {
         return vehiculeService.updateVehicule(vehicule);
     }
 
-    @GetMapping("/marque/{marque}")
+    @GetMapping("/modelBymarque/{marque}")
     public List<String> getModelByMarque(@PathVariable("marque") String marque) {
         return vehiculeService.getModelByMarque(marque);
+    }
+
+    @GetMapping("/marques")
+    public List<String> getMarqueOfCars() {
+        return vehiculeService.getMarque();
+    }
+
+    @GetMapping("/models/{marque}")
+    public List<String> getModelsOf(@PathVariable("marque") String marque) {
+        return vehiculeService.getModelOfMarque(marque);
     }
 
     @GetMapping("/tarif/{tarifmin}-{tarifmax}")
     public List<Vehicule> getVehiculeByTarifBetween(@PathVariable("tarifmin") int tarifmin, @PathVariable("tarifmax") int tarifmax) {
         return vehiculeService.getVehiculeByTarifBetween(tarifmin, tarifmax);
     }
+
+    @GetMapping("/marque/{marque}")
+    public List<Vehicule> getVehiculeByMarque(@PathVariable("marque") String marque) {
+        return vehiculeService.getVehiculeByMarque(marque);
+    }
+
+
 
 
 }

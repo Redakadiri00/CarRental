@@ -3,7 +3,6 @@ package com.CarRentalProject.CarRental.Services;
 import com.CarRentalProject.CarRental.DTO.DateRangeDTO;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Models.Status_reservation;
-import com.CarRentalProject.CarRental.Models.UserModels.User;
 import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Models.UserModels.User;
 import com.CarRentalProject.CarRental.Repositories.ReservationRepository;

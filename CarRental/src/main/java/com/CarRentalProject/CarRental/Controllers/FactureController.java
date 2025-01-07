@@ -1,5 +1,6 @@
 package com.CarRentalProject.CarRental.Controllers;
 
+import com.CarRentalProject.CarRental.DTO.FactureDTO;
 import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
@@ -20,28 +21,32 @@ public class FactureController {
     private FactureService factureService;
 
     @GetMapping
-    public List<Facture> getAllFactures() {
+    public List<FactureDTO> getAllFactures() {
+        System.out.println("Requête reçue pour getAllFactures");
         return factureService.getAllFactures();
     }
 
     @GetMapping("/{id}")
-    public Facture getFactureById(@PathVariable Long id) {
+    public FactureDTO getFactureById(@PathVariable Long id) {
         return factureService.getFactureById(id);
     }
 
     @PostMapping
-    public Facture creerFactureAvecMontant(@RequestBody ReservationDTO reservation) {
+    public FactureDTO creerFactureAvecMontant(@RequestBody ReservationDTO reservation) {
         return factureService.creerFactureAvecMontant(reservation);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFacture(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFacture(@PathVariable Long id) {
         factureService.deleteFacture(id);
+        return ResponseEntity.noContent().build();
     }
-
     @PutMapping("/{id}")
-    public Facture updateFacture(@PathVariable Long id, @RequestBody Facture facture) {
-        return factureService.updateFacture(id, facture);
+    public ResponseEntity<FactureDTO> updateFacture(@PathVariable Long id, @RequestBody FactureDTO factureDTO) {
+        System.out.println("Requête reçue pour updateFacture avec ID : " + id);
+        FactureDTO updatedFacture = factureService.updateFacture(id, factureDTO);
+        System.out.println("Facture mise à jour avec succès pour ID : " + id);
+        return ResponseEntity.ok(updatedFacture);
     }
 
     @GetMapping("/{id}/pdf")

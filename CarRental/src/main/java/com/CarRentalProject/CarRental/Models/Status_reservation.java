@@ -1,4 +1,4 @@
-package com.CarRentalProject.CarRental.Services;
+package com.CarRentalProject.CarRental.Models;
 
 public enum Status_reservation {
     Confirmed,

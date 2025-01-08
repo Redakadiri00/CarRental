@@ -1,13 +1,17 @@
 package com.CarRentalProject.CarRental.Config;
 
+import com.CarRentalProject.CarRental.DTO.Response.UserResponseDTO;
 import com.CarRentalProject.CarRental.Services.UserServices.CustomUserDetailsService;
 import com.CarRentalProject.CarRental.Utils.JwtToken;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,8 +58,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
-        final String token;
-        final String username;
+        String token = null;
+        String username = null;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
@@ -63,7 +67,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         token = authHeader.substring(7);
-        username = jwtToken.extractUsername(token);
+
+        try {
+            username = jwtToken.extractUsername(token);
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"message\":\"JWT token has expired\",\"isAuthenticated\":false}");
+            return;
+        }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);

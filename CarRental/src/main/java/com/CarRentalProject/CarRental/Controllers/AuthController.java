@@ -61,32 +61,39 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser() {
-        // Retrieve the currently authenticated user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        try {
+            // Retrieve the currently authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
 
-        // Fetch the user from the database
-        User user = userService.getUserByUsername(username);
+            // Fetch the user from the database
+            User user = userService.getUserByUsername(username);
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(UserResponseDTO.builder()
+                                .message("User not found")
+                                .isAuthenticated(false)
+                                .build());
+            }
+
+            // Map user to a response DTO
+            return ResponseEntity.ok().body(UserResponseDTO.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .role(user.getClass().getSimpleName().toUpperCase())
+                    .message("Welcome " + user.getName())
+                    .isAuthenticated(true)
+                    .build());
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserResponseDTO.builder()
-                            .message("User not found")
+                            .message("JWT token has expired")
                             .isAuthenticated(false)
                             .build());
-            
         }
-
-        // Map user to a response DTO
-        return ResponseEntity.ok().body(UserResponseDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .role(user.getClass().getSimpleName().toUpperCase())
-                .message("Welcome " + user.getName())
-                .isAuthenticated(true)
-                .build());
     }
 
     /**

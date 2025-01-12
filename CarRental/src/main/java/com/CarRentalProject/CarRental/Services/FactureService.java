@@ -1,8 +1,10 @@
 package com.CarRentalProject.CarRental.Services;
 
+import com.CarRentalProject.CarRental.DTO.FactureDTO;
 import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import com.CarRentalProject.CarRental.Enums.ModePaiement;
+import com.CarRentalProject.CarRental.Mappers.FactureMapper;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
 import com.CarRentalProject.CarRental.Models.Vehicule;
@@ -17,12 +19,12 @@ import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.io.ByteArrayOutputStream;
 
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
-/*import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;*/
-import java.io.ByteArrayOutputStream;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 
 @Service // Déclare la classe comme un bean de service Spring
 public class FactureService implements FactureServiceInterface {
@@ -39,66 +41,89 @@ public class FactureService implements FactureServiceInterface {
     @Autowired
     private VehiculeRepository vehiculeRepository;
 
-    public List<Facture> getAllFactures() {
-        return factureRepository.findAll();
+    @Autowired
+    private FactureMapper factureMapper;
+
+    @Override
+    public List<FactureDTO> getAllFactures() {
+        return factureRepository.findAll()
+                .stream()
+                .map(factureMapper::toDTO)
+                .toList();
     }
 
-    public Facture getFactureById(Long id) {
-        return factureRepository.findById(id).orElse(null);
+    @Override
+    public FactureDTO getFactureById(Long id) {
+        Facture facture = factureRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Facture introuvable"));
+        return factureMapper.toDTO(facture);
     }
-
-    public Facture saveFacture(Facture facture) {
-        return factureRepository.save(facture);
+    @Override
+    public FactureDTO saveFacture(FactureDTO factureDTO) {
+        Reservation reservation = reservationRepository.findById(factureDTO.getReservationId())
+                .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
+        Facture facture = factureMapper.fromDTO(factureDTO, reservation);
+        Facture savedFacture = factureRepository.save(facture);
+        return factureMapper.toDTO(savedFacture);
     }
-
+    @Override
     public void deleteFacture(Long id) {
+        if (!factureRepository.existsById(id)) {
+            throw new RuntimeException("Facture introuvable");
+        }
         factureRepository.deleteById(id);
     }
+    @Override
+    public FactureDTO updateFacture(Long id, FactureDTO factureDTO) {
+        System.out.println("Recherche de la facture avec ID : " + id);
+        Facture existingFacture = factureRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Facture introuvable"));
 
-    public Facture updateFacture(Long id, Facture facture) {
-        Facture existingFacture = factureRepository.findById(id).orElse(null);
-        existingFacture.setDateFacturation(facture.getDateFacturation());
-        existingFacture.setMontantTotal(facture.getMontantTotal());
-        existingFacture.setModePaiement(facture.getModePaiement());
-        existingFacture.setStatut(facture.getStatut());
-        existingFacture.setReservation(facture.getReservation());
-        return factureRepository.save(existingFacture);
+        existingFacture.setMontantTotal(factureDTO.getMontantTotal());
+        existingFacture.setStatut(StatutFacture.valueOf(factureDTO.getStatut()));
+        existingFacture.setDateFacturation(new Date());
+
+        Facture updatedFacture = factureRepository.save(existingFacture);
+        System.out.println("Facture mise à jour : " + updatedFacture);
+        return factureMapper.toDTO(updatedFacture);
     }
 
-   public Facture creerFactureAvecMontant(ReservationDTO reservation) { // Génère une facture avec montant à partir d'une réservation donnée
-
-       // Ensure the reservation is saved before creating the facture
-       Reservation reservationn = reservationRepository.findById(reservation.getVehiculeId())
-               .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
 
-       // Check if the vehicule is not null
-       if (reservation.getVehiculeId() == null) {
-           throw new IllegalArgumentException("Vehicule cannot be null in the reservation");
-       }
+
+   @Override
+    public FactureDTO creerFactureAvecMontant(ReservationDTO reservationDTO) {
+        Reservation reservation = reservationRepository.findById(reservationDTO.getVehiculeId())
+                .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
+
+        Vehicule vehicule = vehiculeRepository.findById(reservationDTO.getVehiculeId())
+                .orElseThrow(() -> new RuntimeException("Véhicule introuvable"));
+
+        double montantTotal = calculerMontantTotal(reservationDTO);
 
         Facture facture = new Facture();
         facture.setDateFacturation(new Date());
-
-        // Calcul du montant total
-        Double montantTotal = calculerMontantTotal(reservation);
         facture.setMontantTotal(montantTotal);
-
-        // Mode de paiement
-        facture.setModePaiement(ModePaiement.CB);
-
-        // Statut initial
         facture.setStatut(StatutFacture.NON_PAYEE);
-
-        // Relation avec la réservation
-        /*facture.setReservation(reservation);*/
+        facture.setModePaiement(ModePaiement.CB);
+        facture.setReservation(reservation);
 
         Facture savedFacture = factureRepository.save(facture);
-
-        // Générer automatiquement un contrat
         contratService.genererContrat(savedFacture);
 
-        return savedFacture;
+        return factureMapper.toDTO(savedFacture);
+    }
+
+    @Override
+    public Long calculerMontantTotal(ReservationDTO reservationDTO) {
+        Vehicule vehicule = vehiculeRepository.findById(reservationDTO.getVehiculeId())
+                .orElseThrow(() -> new RuntimeException("Véhicule introuvable"));
+
+        LocalDate dateDebut = reservationDTO.getDateDebut();
+        LocalDate dateFin = reservationDTO.getDateFin();
+
+        long duree = ChronoUnit.DAYS.between(dateDebut, dateFin);
+        return duree * vehicule.getTarif_de_location();
     }
 
     @Override
@@ -108,45 +133,55 @@ public class FactureService implements FactureServiceInterface {
         return factureRepository.save(facture);
     }
 
+//    @Override
+//    public Double calculerMontantTotal(ReservationDTO reservation) {
+//        Vehicule vehicule = vehiculeRepository.findById(reservation.getVehiculeId())
+//                .orElseThrow(() -> new IllegalArgumentException("Vehicule not found"));
+//
+//        LocalDate localDateDebut = reservation.getDateDebut();
+//        LocalDate localDateFin = reservation.getDateFin();
+//
+//        long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
+//        double montantTotal = duree * vehicule.getTarif_de_location();
+//        System.out.println("Montant total : " + montantTotal);
+//        return montantTotal;
+//    }
+
+
+
+
+
     @Override
-    public Double calculerMontantTotal(ReservationDTO reservation) {
-        Vehicule vehicule = vehiculeRepository.findById(reservation.getVehiculeId())
-                .orElseThrow(() -> new IllegalArgumentException("Vehicule not found"));
-
-        LocalDate localDateDebut = reservation.getDateDebut();
-        LocalDate localDateFin = reservation.getDateFin();
-
-        long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
-        double montantTotal = duree * vehicule.getTarif_de_location();
-        System.out.println("Montant total : " + montantTotal);
-        return montantTotal;
+    public List<FactureDTO> getFacturesByClientId(Long clientId) {
+        return factureRepository.findByReservation_Client_Id(clientId)
+                .stream()
+                .map(factureMapper::toDTO)
+                .toList();
     }
 
     @Override
-    public List<Facture> getFacturesByClientId(Long clientId) {
-        return factureRepository.findByReservation_Client_Id(clientId);
-    }
-
-    @Override
-    public List<Facture> getFacturesByPeriode(Date debut, Date fin) {
-        return factureRepository.findByDateFacturationBetween(debut, fin);
+    public List<FactureDTO> getFacturesByPeriode(Date debut, Date fin) {
+        return factureRepository.findByDateFacturationBetween(debut, fin)
+                .stream()
+                .map(factureMapper::toDTO)
+                .toList();
     }
 
     @Override
     public byte[] genererFacturePdf(Long id) {
-        Facture facture = factureRepository.findById(id).orElseThrow(() -> new RuntimeException("Facture introuvable"));
+        Facture facture = factureRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Facture introuvable"));
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
-            /*Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
 
-            // Ajouter du contenu au PDF
             document.add(new Paragraph("Facture #" + facture.getIdFacture()));
             document.add(new Paragraph("Date de Facturation : " + facture.getDateFacturation()));
             document.add(new Paragraph("Montant Total : " + facture.getMontantTotal() + " €"));
-            document.add(new Paragraph("Statut : " + facture.getStatut().toString()));
+            document.add(new Paragraph("Statut : " + facture.getStatut()));
 
-            document.close();*/
+            document.close();
             return outputStream.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la génération du PDF", e);

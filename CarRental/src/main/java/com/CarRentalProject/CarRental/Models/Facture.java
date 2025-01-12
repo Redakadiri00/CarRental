@@ -11,6 +11,8 @@ import java.util.Date;
 
 
 @Entity
+@Data
+@Builder
 public class Facture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +34,19 @@ public class Facture {
     @JoinColumn(name = "reservation_id", nullable=false)
     private Reservation reservation; // Une facture est liée à une réservation (relation ManyToOne)
 
+    public Facture() {
+
+    }
+
+    // Constructeur complet
+    public Facture(Long id, Date dateFacturation, Double montantTotal, ModePaiement modePaiement, StatutFacture statut, Reservation reservation) {
+        this.idFacture = id;
+        this.dateFacturation = dateFacturation;
+        this.montantTotal = montantTotal;
+        this.modePaiement = modePaiement;
+        this.statut = statut;
+        this.reservation = reservation;
+    }
 
 
     public Long getIdFacture() {

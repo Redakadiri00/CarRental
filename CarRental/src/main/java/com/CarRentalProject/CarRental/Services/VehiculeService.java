@@ -34,7 +34,7 @@ public class VehiculeService implements VehiculeServiceInterface {
     }
 
 
-    public void deleteVehicule(Integer id) {
+    public boolean deleteVehicule(Integer id) {
         vehiculeRepository.deleteById(id);
     }
 

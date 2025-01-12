@@ -4,9 +4,14 @@ import com.CarRentalProject.CarRental.Enums.StatutContrat;
 import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import jakarta.persistence.*;
 import com.CarRentalProject.CarRental.Models.Reservation;
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.Date;
 
 @Entity
+@Data
+@Builder
 public class Contrat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +26,18 @@ public class Contrat {
     @OneToOne
     @JoinColumn(nullable = false)
     private Facture facture; // Un contrat est lié à une facture.
+
+    public Contrat() {
+
+    }
+
+    // Constructeur complet
+    public Contrat(Long idContrat, StatutContrat statut, Date dateCreation, Facture facture) {
+        this.idContrat = idContrat;
+        this.statut = statut;
+        this.dateCreation = dateCreation;
+        this.facture = facture;
+    }
 
     public Long getIdContrat() {
         return idContrat;

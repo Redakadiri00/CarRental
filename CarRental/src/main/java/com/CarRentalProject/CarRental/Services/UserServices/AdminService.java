@@ -32,6 +32,7 @@ public class AdminService {
             throw e;
         }
         admin.setStatus(UserStatus.ACTIVE);
+        System.out.println(admin);
         return (Admin) userService.createUser(admin);
     }
 
@@ -66,6 +67,15 @@ public class AdminService {
     public void deleteAdmin(Admin admin) {
         try {
             adminRepository.delete(admin);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    public List<Admin> getAdmins() {
+        try {
+            System.out.println(adminRepository.findAll());
+            return adminRepository.findAll();
         } catch (IllegalArgumentException e) {
             throw e;
         }

@@ -123,6 +123,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Allow public access to authentication endpoints
                         .requestMatchers(HttpMethod.GET, "/api/v1/vehicules/**").permitAll() // Allow GET requests for vehicules
+                        .requestMatchers("api/admins/**").hasRole("ADMIN") // Require ADMIN role for admin endpoints
                         .anyRequest().authenticated()) // Require authentication for all other requests
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -16,12 +16,15 @@ import com.CarRentalProject.CarRental.Models.UserModels.Admin;
 import com.CarRentalProject.CarRental.Services.UserServices.AdminService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * REST controller for managing Admin-related operations.
  */
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admins")
 public class AdminController {
 
     private final AdminService adminService;
@@ -39,6 +42,21 @@ public class AdminController {
         this.adminMapper = adminMapper;
     }
 
+    @GetMapping
+    public ResponseEntity<List<AdminDTO>> getAdmins() {
+        try {
+            List<Admin> admins = adminService.getAdmins();
+            System.out.println(admins);
+            List<AdminDTO> adminDTOs = admins.stream()
+                                             .map(adminMapper::toDTO)
+                                             .collect(Collectors.toList());
+            return ResponseEntity.ok(adminDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body(null);
+        }
+    }
+
     /**
      * Creates a new Admin.
      *
@@ -47,11 +65,16 @@ public class AdminController {
      */
     @PostMapping
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<AdminDTO> createAdmin(@Valid @RequestBody AdminDTO adminDTO) {
+    public ResponseEntity<String> createAdmin(@RequestBody Admin admin) {
         try {
-            Admin admin = adminService.createAdmin(adminMapper.toEntity(adminDTO));
+            Admin adminCreated = adminService.createAdmin(admin);
+            if (adminCreated == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                     .body("Admin creation failed");
+                
+            }
             return ResponseEntity.status(HttpStatus.CREATED)
-                                 .body(adminMapper.toDTO(admin));
+                                 .body("Admin created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                  .body(null); // Customize error response if needed

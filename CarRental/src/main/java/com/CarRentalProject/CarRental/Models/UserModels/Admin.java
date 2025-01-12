@@ -39,6 +39,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
+@Table(name = "admin")
 @DiscriminatorValue("ADMIN")
 public class Admin extends User {
 

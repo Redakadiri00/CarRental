@@ -110,4 +110,8 @@ public class Vehicule {
     public void setId_voiture(Integer Id) {
         this.Id = Id;
     }
+
+    public double getPricePerDay() {
+        return tarif;
+    }
 }

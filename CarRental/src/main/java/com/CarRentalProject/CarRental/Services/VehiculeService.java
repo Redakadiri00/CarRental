@@ -34,8 +34,8 @@ public class VehiculeService implements VehiculeServiceInterface {
     }
 
 
-    public boolean deleteVehicule(Integer id) {
-        vehiculeRepository.deleteById(id);
+    public void deleteVehicule(Integer id) {
+         vehiculeRepository.deleteById(id);
     }
 
     @Override

@@ -11,9 +11,12 @@ import com.CarRentalProject.CarRental.Repositories.VehiculeRepository;
 import com.CarRentalProject.CarRental.Repositories.UserRepositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -48,6 +51,8 @@ public class ReservationService implements ReservationServiceInterface {
         reservation.setDateFin(dateFin);
         reservation.setDateReservation(LocalDate.now());
         reservation.setStatusReservation(Status_reservation.NonConfirmed);
+        reservation.setCreatedAt(LocalDateTime.now());
+
 
         return reservationRepository.save(reservation);
     }
@@ -59,6 +64,20 @@ public class ReservationService implements ReservationServiceInterface {
 
     public List<DateRangeDTO> getReservedDates(Integer vehiculeId) {
         return reservationRepository.findReservedDatesByVehiculeId(vehiculeId);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void cleanupUnconfirmedReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Reservation reservation : reservations) {
+            if (reservation.getStatusReservation() == Status_reservation.NonConfirmed &&
+                    reservation.getCreatedAt() != null &&
+                    ChronoUnit.SECONDS.between(reservation.getCreatedAt(), now) >= 30) {
+                reservationRepository.delete(reservation);
+            }
+        }
     }
 
 }

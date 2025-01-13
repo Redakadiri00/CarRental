@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.CarRentalProject.CarRental.Models.UserModels.User;
 
@@ -18,6 +19,7 @@ public class Reservation {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private LocalDate dateReservation;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private Status_reservation statusReservation;
@@ -84,5 +86,13 @@ public class Reservation {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

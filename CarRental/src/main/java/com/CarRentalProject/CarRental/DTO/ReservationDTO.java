@@ -1,6 +1,10 @@
 package com.CarRentalProject.CarRental.DTO;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
+
+@Builder // Lombok annotation to automatically generate the following boilerplate code
 
 public class ReservationDTO {
     private Integer vehiculeId;

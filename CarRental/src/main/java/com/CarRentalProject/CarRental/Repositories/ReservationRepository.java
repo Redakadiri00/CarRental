@@ -12,14 +12,15 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-
     @Query("SELECT r FROM Reservation r WHERE r.vehicule = :vehicule AND " +
             "(r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut)")
     List<Reservation> findReservationsByVehiculeAndDateRange(@Param("vehicule") Vehicule vehicule,
-                                                             @Param("dateDebut") LocalDate dateDebut,
-                                                             @Param("dateFin") LocalDate dateFin);
-
+            @Param("dateDebut") LocalDate dateDebut,
+            @Param("dateFin") LocalDate dateFin);
 
     @Query("SELECT new com.CarRentalProject.CarRental.DTO.DateRangeDTO(r.dateDebut, r.dateFin) FROM Reservation r WHERE r.vehicule.Id = :vehiculeId")
     List<DateRangeDTO> findReservedDatesByVehiculeId(@Param("vehiculeId") Integer vehiculeId);
+
+    @Query("SELECT r FROM Reservation r WHERE r.dateDebut >= :startDate AND r.dateDebut <= :endDate")
+    List<Reservation> findReservationsByDateRange(LocalDate startDate, LocalDate endDate);
 }

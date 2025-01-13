@@ -74,7 +74,7 @@ public class ReservationService implements ReservationServiceInterface {
         for (Reservation reservation : reservations) {
             if (reservation.getStatusReservation() == Status_reservation.NonConfirmed &&
                     reservation.getCreatedAt() != null &&
-                    ChronoUnit.SECONDS.between(reservation.getCreatedAt(), now) >= 30) {
+                    ChronoUnit.HOURS.between(reservation.getCreatedAt(), now) >= 1) {
                 reservationRepository.delete(reservation);
             }
         }

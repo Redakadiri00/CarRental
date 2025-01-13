@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+import com.CarRentalProject.CarRental.Enums.UserStatus;
+
 @Data
 @Builder
 public class UserResponseDTO {
@@ -15,4 +17,5 @@ public class UserResponseDTO {
     private LocalDateTime createdAt;
     private String message;
     private Boolean isAuthenticated;
+    private UserStatus status;
 }

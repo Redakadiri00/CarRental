@@ -23,7 +23,7 @@ public class Contrat {
     @Temporal(TemporalType.DATE)
     private Date dateCreation;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private Facture facture; // Un contrat est lié à une facture.
 

@@ -5,12 +5,15 @@ import com.CarRentalProject.CarRental.DTO.ReservationDTO;
 import com.CarRentalProject.CarRental.Enums.StatutFacture;
 import com.CarRentalProject.CarRental.Enums.ModePaiement;
 import com.CarRentalProject.CarRental.Mappers.FactureMapper;
+import com.CarRentalProject.CarRental.Mappers.ReservationMapper;
 import com.CarRentalProject.CarRental.Models.Facture;
 import com.CarRentalProject.CarRental.Models.Reservation;
+import com.CarRentalProject.CarRental.Models.UserModels.Client;
 import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Repositories.FactureRepository;
 import com.CarRentalProject.CarRental.Repositories.ReservationRepository;
 import com.CarRentalProject.CarRental.Repositories.VehiculeRepository;
+import com.CarRentalProject.CarRental.Services.UserServices.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,18 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.element.LineSeparator;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+
+
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 @Service // Déclare la classe comme un bean de service Spring
 public class FactureService implements FactureServiceInterface {
@@ -43,6 +58,21 @@ public class FactureService implements FactureServiceInterface {
 
     @Autowired
     private FactureMapper factureMapper;
+
+    @Autowired
+    private  ReservationMapper reservationMapper;
+
+    @Autowired
+    private ClientService ClientService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
+    @Autowired
+    public void setContratService(ContratService contratService) {
+        this.contratService = contratService;
+    }
 
     @Override
     public List<FactureDTO> getAllFactures() {
@@ -75,7 +105,6 @@ public class FactureService implements FactureServiceInterface {
     }
     @Override
     public FactureDTO updateFacture(Long id, FactureDTO factureDTO) {
-        System.out.println("Recherche de la facture avec ID : " + id);
         Facture existingFacture = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture introuvable"));
 
@@ -84,7 +113,6 @@ public class FactureService implements FactureServiceInterface {
         existingFacture.setDateFacturation(new Date());
 
         Facture updatedFacture = factureRepository.save(existingFacture);
-        System.out.println("Facture mise à jour : " + updatedFacture);
         return factureMapper.toDTO(updatedFacture);
     }
 
@@ -93,12 +121,27 @@ public class FactureService implements FactureServiceInterface {
 
    @Override
     public FactureDTO creerFactureAvecMontant(ReservationDTO reservationDTO) {
-        Reservation reservation = reservationRepository.findById(reservationDTO.getVehiculeId())
-                .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
 
         Vehicule vehicule = vehiculeRepository.findById(reservationDTO.getVehiculeId())
                 .orElseThrow(() -> new RuntimeException("Véhicule introuvable"));
 
+       // Recherche du client
+       Client client = ClientService.getClientById(reservationDTO.getClientId());
+
+       // Conversion du DTO en entité
+       Reservation reservation = reservationMapper.toEntity(reservationDTO, vehicule, client);
+       reservationRepository.save(reservation);
+
+       // Recherche de réservation existante
+       List<Reservation> reservationsExistantes = reservationRepository.findReservationsByVehiculeAndDateRange(
+               vehicule,
+               reservationDTO.getDateDebut(),
+               reservationDTO.getDateFin()
+       );
+
+       if (reservationsExistantes.isEmpty()) {
+              throw new RuntimeException("Aucune réservation existante pour ce véhicule");
+       }
         double montantTotal = calculerMontantTotal(reservationDTO);
 
         Facture facture = new Facture();
@@ -109,7 +152,6 @@ public class FactureService implements FactureServiceInterface {
         facture.setReservation(reservation);
 
         Facture savedFacture = factureRepository.save(facture);
-        contratService.genererContrat(savedFacture);
 
         return factureMapper.toDTO(savedFacture);
     }
@@ -127,26 +169,17 @@ public class FactureService implements FactureServiceInterface {
     }
 
     @Override
+    @Transactional
     public Facture marquerCommePayee(Long id) {
-        Facture facture = factureRepository.findById(id).orElse(null);
+        Facture facture = factureRepository.findById(id).orElseThrow(() -> new RuntimeException("Facture introuvable"));
         facture.setStatut(StatutFacture.PAYEE);
-        return factureRepository.save(facture);
+
+        // Rattache l'entité au contexte de persistance avec merge()
+        Facture facturePayee = entityManager.merge(facture);
+
+        contratService.genererContrat(facturePayee);
+        return facturePayee;
     }
-
-//    @Override
-//    public Double calculerMontantTotal(ReservationDTO reservation) {
-//        Vehicule vehicule = vehiculeRepository.findById(reservation.getVehiculeId())
-//                .orElseThrow(() -> new IllegalArgumentException("Vehicule not found"));
-//
-//        LocalDate localDateDebut = reservation.getDateDebut();
-//        LocalDate localDateFin = reservation.getDateFin();
-//
-//        long duree = ChronoUnit.DAYS.between(localDateDebut, localDateFin);
-//        double montantTotal = duree * vehicule.getTarif_de_location();
-//        System.out.println("Montant total : " + montantTotal);
-//        return montantTotal;
-//    }
-
 
 
 
@@ -174,12 +207,60 @@ public class FactureService implements FactureServiceInterface {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
-            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc);
 
-            document.add(new Paragraph("Facture #" + facture.getIdFacture()));
-            document.add(new Paragraph("Date de Facturation : " + facture.getDateFacturation()));
-            document.add(new Paragraph("Montant Total : " + facture.getMontantTotal() + " €"));
-            document.add(new Paragraph("Statut : " + facture.getStatut()));
+            // Titre principal
+            document.add(new Paragraph("HaMoRe - Facture")
+                    .setFontSize(24)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20));
+
+            // Ligne de séparation
+            SolidLine line = new SolidLine();
+            line.setLineWidth(1.5f);  // Épaisseur de la ligne
+            document.add(new LineSeparator(line));
+
+            // Informations sur la facture
+            document.add(new Paragraph("Facture #" + facture.getIdFacture())
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginTop(10));
+            document.add(new Paragraph("Date de facturation : " + facture.getDateFacturation())
+                    .setFontSize(12)
+                    .setMarginBottom(10));
+            document.add(new Paragraph("Montant total : " + facture.getMontantTotal() + " €")
+                    .setFontSize(16)
+                    .setBold()
+                    .setFontColor(ColorConstants.GREEN)
+                    .setMarginBottom(10));
+            document.add(new Paragraph("Statut : " + facture.getStatut())
+                    .setFontSize(14)
+                    .setFontColor(facture.getStatut().equals(StatutFacture.PAYEE) ? ColorConstants.GREEN : ColorConstants.RED));
+
+            // Table des détails
+            Table table = new Table(2);
+            table.addCell(new Cell().add(new Paragraph("Détail").setBold()));
+            table.addCell(new Cell().add(new Paragraph("Valeur")));
+
+            table.addCell("ID Facture");
+            table.addCell(facture.getIdFacture().toString());
+
+            table.addCell("Montant Total");
+            table.addCell(facture.getMontantTotal() + " €");
+
+            document.add(table.setMarginTop(20));
+
+            // Pied de page
+            document.add(new Paragraph("Merci de votre confiance !")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(12)
+                    .setMarginTop(30));
+            document.add(new Paragraph("www.HaMoRe.com")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(10)
+                    .setFontColor(ColorConstants.BLUE));
 
             document.close();
             return outputStream.toByteArray();
@@ -187,5 +268,6 @@ public class FactureService implements FactureServiceInterface {
             throw new RuntimeException("Erreur lors de la génération du PDF", e);
         }
     }
+
 
 }

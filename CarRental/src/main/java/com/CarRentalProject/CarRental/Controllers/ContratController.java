@@ -1,6 +1,9 @@
 package com.CarRentalProject.CarRental.Controllers;
 
+import com.CarRentalProject.CarRental.DTO.ContratDTO;
+import com.CarRentalProject.CarRental.Mappers.ContratMapper;
 import com.CarRentalProject.CarRental.Models.Contrat;
+import com.CarRentalProject.CarRental.Repositories.ContratRepository;
 import com.CarRentalProject.CarRental.Services.ContratService;
 import com.CarRentalProject.CarRental.Services.ContratServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +21,24 @@ public class ContratController {
     @Autowired
     private ContratServiceInterface contratService;
 
+    @Autowired
+    private ContratRepository contratRepository;
+
+    @Autowired
+    private ContratMapper contratMapper;
+
     @GetMapping
-    public List<Contrat> getAllContrats() {
+    public List<ContratDTO> getAllContrats() {
         return contratService.getAllContrats();
     }
 
     @GetMapping("/{id}")
-    public Contrat getContratById(@PathVariable Long id) {
+    public ContratDTO getContratById(@PathVariable Long id) {
         return contratService.getContratById(id);
     }
 
     @PostMapping
-    public Contrat saveContrat(@RequestBody Contrat contrat) {
+    public ContratDTO saveContrat(@RequestBody ContratDTO contrat) {
         return contratService.saveContrat(contrat);
     }
 
@@ -39,7 +48,7 @@ public class ContratController {
     }
 
     @PutMapping("/{id}")
-    public Contrat updateContrat(@PathVariable Long id, @RequestBody Contrat contrat) {
+    public ContratDTO updateContrat(@PathVariable Long id, @RequestBody ContratDTO contrat) {
         return contratService.updateContrat(id, contrat);
     }
 
@@ -51,5 +60,14 @@ public class ContratController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
+
+    @GetMapping("/by-facture/{factureId}")
+    public ResponseEntity<ContratDTO> getContratByFactureId(@PathVariable Long factureId) {
+        Contrat contrat = (Contrat) contratRepository.findByFacture_IdFacture(factureId)
+                .orElseThrow(() -> new RuntimeException("Contrat introuvable pour la facture donnée"));
+        return ResponseEntity.ok(contratMapper.toDTO(contrat));
+    }
+
+
 }
 

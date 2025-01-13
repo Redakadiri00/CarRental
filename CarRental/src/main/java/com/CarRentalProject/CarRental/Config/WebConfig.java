@@ -17,7 +17,7 @@ public class WebConfig {
                         .allowedOrigins("http://localhost:5173") // Allow requests from React app
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow specific HTTP methods
                         .allowedHeaders("*") // Allow all headers
-                        .allowCredentials(true); // Allow credentials (optional)
+                        .allowCredentials(false); // Allow credentials (optional)
             }
         };
     }

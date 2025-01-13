@@ -5,18 +5,30 @@ import com.CarRentalProject.CarRental.Models.Caracteristique_voiture;
 import com.CarRentalProject.CarRental.Models.Vehicule;
 import com.CarRentalProject.CarRental.Services.VehiculeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/vehicules")
+@CrossOrigin(origins = "http://localhost:5173")
 public class VehiculeController {
 
     private final VehiculeService vehiculeService;
@@ -28,6 +40,7 @@ public class VehiculeController {
     // dsdsadsa
 
     @PostMapping(consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addVehicule(
             @RequestParam("marque") String marque,
             @RequestParam("model") String model,
@@ -80,13 +93,74 @@ public class VehiculeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteVehicule(@PathVariable int id) {
         vehiculeService.deleteVehicule(id);
     }
 
-    @PutMapping
-    public Vehicule updateVehicule(@RequestBody Vehicule vehicule) {
-        return vehiculeService.updateVehicule(vehicule);
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> updateVehicule(
+            @PathVariable("id") Integer id,
+            @RequestParam("marque") String marque,
+            @RequestParam("model") String model,
+            @RequestParam("type") String type,
+            @RequestParam("tarif_de_location") Integer tarifDeLocation,
+            @RequestParam("status") Status_Voiture status,
+            @RequestParam(value = "caracteristique", required = false) Set<Caracteristique_voiture> caracteristique,
+            @RequestParam(value = "imageVoiture", required = false) MultipartFile imageVoiture) {
+        try {
+            // Fetch the existing vehicle
+            Vehicule vehicule = vehiculeService.getVehiculeById(id);
+            if (vehicule == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vehicle not found.");
+            }
+
+            // Update vehicle details
+            vehicule.setMarque(marque);
+            vehicule.setModel(model);
+            vehicule.setType(type);
+            vehicule.setTarif_de_location(tarifDeLocation);
+            vehicule.setStatus_voiture(status);
+            vehicule.setCaracteristique(caracteristique);
+
+            // Handle file upload
+            if (imageVoiture != null && !imageVoiture.isEmpty()) {
+                // Validate file type
+                String contentType = imageVoiture.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Invalid file type. Only images are allowed.");
+                }
+
+                // Generate unique file name
+                String uploadDir = System.getProperty("user.dir") + "/uploads/";
+                File directory = new File(uploadDir);
+                if (!directory.exists() && !directory.mkdirs()) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Failed to create upload directory.");
+                }
+                
+                String originalFilename = imageVoiture.getOriginalFilename();
+                String uniqueFilename = System.currentTimeMillis() + "_" + originalFilename;
+                Path filePath = Paths.get(uploadDir, uniqueFilename);
+                System.out.println(filePath);
+
+                // Save file
+                Files.copy(imageVoiture.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Update the vehicle's image path
+                vehicule.setImageVoiture(filePath.toString());
+            }
+
+            // Update vehicle in the database
+            vehiculeService.updateVehicule(vehicule);
+
+            return ResponseEntity.ok("Vehicle updated successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload file: " + e.getMessage());
+        }
     }
 
     @GetMapping("/modelBymarque/{marque}")
@@ -135,6 +209,29 @@ public class VehiculeController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("File upload failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/images/{id}")
+    public ResponseEntity<Resource> getImage(@PathVariable Integer id) {
+
+        Vehicule vehicule = vehiculeService.getVehiculeById(id);
+        try {
+            Path filePath = Paths.get(System.getProperty("user.dir") + "/uploads/").resolve(vehicule.getImageVoiture())
+                    .normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG) // Adjust the content type based on your image type
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

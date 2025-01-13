@@ -35,6 +35,7 @@ public class SecurityConfig {
     /**
      * Defines the PasswordEncoder bean using BCrypt.
      *
+
      * @return a BCryptPasswordEncoder instance
      */
     @Bean
@@ -102,6 +103,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()) // Require authentication for all other requests
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

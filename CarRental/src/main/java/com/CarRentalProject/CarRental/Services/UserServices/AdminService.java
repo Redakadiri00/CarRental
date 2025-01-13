@@ -80,4 +80,12 @@ public class AdminService {
             throw e;
         }
     }
+
+    public Admin getAdminByUsername(String username) {
+        try {
+            return adminRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
 }

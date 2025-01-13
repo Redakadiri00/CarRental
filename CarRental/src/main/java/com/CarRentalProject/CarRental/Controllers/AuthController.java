@@ -28,7 +28,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 
-
 /**
  * AuthController handles authentication requests for the CarRental API.
  */
@@ -57,8 +56,6 @@ public class AuthController {
     @Value("${app.url}")
     private String url;
 
-
-
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser() {
         try {
@@ -86,6 +83,7 @@ public class AuthController {
                     .role(user.getClass().getSimpleName().toUpperCase())
                     .message("Welcome " + user.getName())
                     .isAuthenticated(true)
+                    .status(user.getStatus())
                     .build());
         } catch (ExpiredJwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -118,17 +116,14 @@ public class AuthController {
             User user = userService.getUserByUsername(username);
             if (user == null) {
                 user = userService.getUserByEmail(username);
-            } 
+            }
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
                         .message("User not found")
                         .build());
             }
-            if (user.getStatus() == UserStatus.UNVERIFIED) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
-                        .message("User is not verified")
-                        .build());
-            } else if (user.getStatus() != UserStatus.ACTIVE) {
+
+            if (user.getStatus() == UserStatus.INACTIVE) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(LoginResponseDTO.builder()
                         .message("User is not active")
                         .build());
@@ -188,17 +183,21 @@ public class AuthController {
         return ResponseEntity.ok("Registration successful. Please check your email for verification.");
     }
 
-    
     /**
      * Endpoint to verify the user's email using a token.
      * 
      * @param token the token sent to the user's email for verification
-     * @return ResponseEntity with a message indicating the result of the verification process
+     * @return ResponseEntity with a message indicating the result of the
+     *         verification process
      * 
-     * This method extracts the email from the provided token and checks its validity.
-     * If the token is invalid or expired, it returns a BAD_REQUEST response.
-     * If the token is valid, it updates the user's status to ACTIVE and saves the user.
-     * Finally, it returns an OK response indicating successful email verification.
+     *         This method extracts the email from the provided token and checks its
+     *         validity.
+     *         If the token is invalid or expired, it returns a BAD_REQUEST
+     *         response.
+     *         If the token is valid, it updates the user's status to ACTIVE and
+     *         saves the user.
+     *         Finally, it returns an OK response indicating successful email
+     *         verification.
      */
     @GetMapping("/verify")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
@@ -227,6 +226,31 @@ public class AuthController {
         }
 
         return ResponseEntity.ok("Email verified successfully");
+    }
+
+    @PostMapping("/resendverification")
+    public ResponseEntity<String> resendVerificationEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (user.getStatus() == UserStatus.ACTIVE) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already verified");
+        }
+
+        String email = user.getEmail();
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not found");
+        }
+
+        String verificationToken = jwtToken.generateEmailVerificationToken(email);
+        emailService.sendVerificationEmail(email, verificationToken, url);
+
+        return ResponseEntity.ok("Verification email sent successfully");
     }
 
 }
